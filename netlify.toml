@@ -1,0 +1,5 @@
+# Tells Netlify where the serverless functions live.
+# The site's static files (index.html, icon.png, etc.) are served from the repo root.
+[build]
+  publish = "."
+  functions = "netlify/functions"

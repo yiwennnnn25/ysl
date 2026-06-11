@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YSL — Your Style Lab</title>
+<link rel="apple-touch-icon" sizes="180x180" href="icon.png">
+<link rel="icon" href="icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.106.1/dist/umd/supabase.min.js"></script>
+<style>
+/* ─────────────────────────────────────────────────────────────
+   YSL · Your Style Lab — refined surface
+   Preserves existing class names; lifts hierarchy, depth & calm.
+   ───────────────────────────────────────────────────────────── */
+:root{
+  /* Tonal palette — warm pearls + dusty rose */
+  --cream:#FBF8F4;
+  --cream-2:#F5EFE8;
+  --blush:#F0DDD3;
+  --blush-soft:rgba(232,213,204,0.55);
+  --rose:#C9A89A;
+  --rose-deep:#B89386;
+  --mauve:#9B7B8A;
+  --mauve-deep:#7C5F6E;
+  --slate:#7B6F70;
+  --slate-soft:#A89B9C;
+  --deep:#2C2420;
+  --deep-2:#1A1410;
+  --soft-white:#FDFBF9;
+  --pearl:#FFFEFC;
+  --sage:#A8B5A0;
+  /* Borders & shadows */
+  --border:rgba(155,123,138,0.14);
+  --border-strong:rgba(155,123,138,0.26);
+  --shadow:0 2px 14px rgba(44,36,32,0.05);
+  --shadow-md:0 10px 30px rgba(155,123,138,0.10), 0 2px 8px rgba(44,36,32,0.04);
+  --shadow-lg:0 24px 60px rgba(155,123,138,0.18), 0 6px 16px rgba(44,36,32,0.06);
+  --shadow-cta:0 18px 40px rgba(44,36,32,0.22), 0 6px 14px rgba(155,123,138,0.20), inset 0 1px 0 rgba(255,255,255,0.10);
+  --glow-focus:0 0 0 4px rgba(155,123,138,0.10);
+  /* Glass */
+  --glass:rgba(253,251,249,0.72);
+  --glass-strong:rgba(253,251,249,0.88);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;}
+body{
+  font-family:'DM Sans',sans-serif;
+  color:var(--deep);
+  font-size:14px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  letter-spacing:0.005em;
+  /* Ambient pastel mesh — soft luxury depth without noise */
+  background:
+    radial-gradient(820px 620px at 92% -8%, rgba(232,213,204,0.60), transparent 60%),
+    radial-gradient(720px 700px at -10% 38%, rgba(196,184,210,0.32), transparent 60%),
+    radial-gradient(640px 480px at 55% 112%, rgba(255,232,222,0.55), transparent 60%),
+    var(--cream);
+  background-attachment:fixed;
+}
+/* ── Setup overlay ── */
+#setup-overlay{position:fixed;inset:0;background:rgba(44,36,32,0.50);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:999;display:flex;align-items:center;justify-content:center;padding:20px;}
+#setup-overlay.hidden{display:none;}
+.setup-card{background:var(--glass-strong);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.6);border-radius:22px;padding:32px 28px;max-width:460px;width:100%;box-shadow:var(--shadow-lg);position:relative;}.setup-close-btn{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:rgba(253,251,249,0.85);border:1px solid var(--border-strong);color:var(--slate);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1;}
+.setup-title{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;margin-bottom:6px;letter-spacing:0.01em;}
+.setup-sub{font-size:12px;color:var(--slate);margin-bottom:20px;line-height:1.7;}
+.setup-field{margin-bottom:14px;}
+.setup-field label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--slate);font-weight:500;display:block;margin-bottom:7px;}
+.setup-field input{width:100%;padding:12px 14px;border:1px solid var(--border-strong);border-radius:11px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--pearl);outline:none;transition:border-color 0.25s, box-shadow 0.25s;}
+.setup-field input:focus{border-color:var(--mauve);box-shadow:var(--glow-focus);}
+.setup-hint{font-size:10px;color:var(--slate-soft);margin-top:5px;font-style:italic;}
+.setup-btn{width:100%;padding:14px;background:linear-gradient(180deg,var(--deep) 0%,var(--deep-2) 100%);color:var(--cream);border:none;border-radius:12px;font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;letter-spacing:0.08em;cursor:pointer;margin-top:6px;transition:transform 0.2s, box-shadow 0.25s;box-shadow:var(--shadow-cta);}
+.setup-btn:hover{transform:translateY(-1px);}
+.setup-skip{text-align:center;margin-top:12px;font-size:11px;color:var(--slate);}
+.setup-skip a{color:var(--mauve);cursor:pointer;text-decoration:underline;text-underline-offset:2px;}
+.setup-schema{background:var(--cream-2);border-radius:11px;padding:11px 13px;margin-top:16px;font-size:11px;color:var(--slate);}
+.setup-schema summary{cursor:pointer;color:var(--mauve);font-weight:500;margin-bottom:5px;}
+.setup-schema pre{font-size:10px;overflow-x:auto;white-space:pre-wrap;line-height:1.5;}
+
+/* ── Header ── */
+header{
+  background:linear-gradient(180deg, rgba(253,251,249,0.85), rgba(253,251,249,0.65));
+  backdrop-filter:saturate(140%) blur(18px);
+  -webkit-backdrop-filter:saturate(140%) blur(18px);
+  border-bottom:1px solid rgba(155,123,138,0.10);
+  padding:14px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-mark{
+  width:36px;height:36px;border-radius:10px;
+  background: linear-gradient(135deg,#F2DCD0,#D9C3D0);
+  box-shadow:0 4px 14px rgba(201,168,154,0.35), inset 0 0 0 1px rgba(255,255,255,0.6);
+  flex-shrink:0;
+}
+.brand-text{display:flex;align-items:baseline;gap:10px;line-height:1;}
+.logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:0.18em;}
+.logo span{color:var(--mauve);font-style:italic;}
+.tagline{font-size:10px;color:var(--slate);letter-spacing:0.20em;text-transform:uppercase;white-space:nowrap;}
+@media(max-width:520px){.tagline{display:none;}}
+.hdr-btn{font-size:11px;color:var(--slate);cursor:pointer;padding:7px 12px;border:1px solid var(--border);border-radius:9px;transition:all 0.25s;background:rgba(253,251,249,0.6);letter-spacing:0.05em;}
+.hdr-btn:hover{border-color:var(--mauve);color:var(--mauve);background:var(--pearl);}
+
+/* ── Container ── */
+.container{max-width:760px;margin:0 auto;padding:32px 22px 96px;}
+
+/* ── Tabs ── */
+.tabs{
+  display:flex;gap:2px;
+  background:rgba(232,213,204,0.45);
+  border:1px solid rgba(255,255,255,0.45);
+  border-radius:14px;padding:4px;margin-bottom:32px;
+  overflow-x:auto;
+  box-shadow:inset 0 1px 2px rgba(155,123,138,0.06);
+}
+.tab{
+  flex:1;min-width:68px;padding:10px 6px;
+  border:none;background:transparent;border-radius:10px;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;
+  color:var(--mauve);cursor:pointer;
+  transition:all 0.25s ease;
+  letter-spacing:0.10em;text-transform:uppercase;white-space:nowrap;
+}
+.tab:hover:not(.active):not(:disabled){color:var(--mauve-deep);}
+.tab.active{
+  background:var(--pearl);
+  color:var(--deep);
+  box-shadow:0 2px 10px rgba(44,36,32,0.08), 0 0 0 1px rgba(255,255,255,0.5) inset;
+}
+.tab:disabled{opacity:0.35;cursor:not-allowed;}
+
+.panel{display:none;}
+.panel.active{display:block;animation:fadeUp 0.4s cubic-bezier(.2,.7,.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+/* ── Section labels (eyebrow) ── */
+.slabel{
+  font-size:10px;letter-spacing:0.22em;text-transform:uppercase;
+  color:var(--mauve);font-weight:500;
+  margin-bottom:14px;margin-top:34px;
+  display:flex;align-items:center;gap:10px;
+}
+.slabel:first-child{margin-top:0;}
+.slabel::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg, rgba(155,123,138,0.22), transparent 70%);
+}
+.slabel .num{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;
+  font-size:13px;letter-spacing:0.02em;text-transform:none;
+  color:var(--rose);opacity:0.85;
+}
+
+/* ── Card (refined glass) ── */
+.card{
+  background:var(--glass-strong);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:18px;padding:20px;margin-bottom:14px;
+  box-shadow:var(--shadow-md);
+}
+.card-title{
+  font-size:10px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--mauve);margin-bottom:13px;
+}
+
+/* ── Inputs (refined) ── */
+input,select,textarea{
+  font-family:'DM Sans',sans-serif;font-size:13.5px;
+  padding:13px 15px;
+  border:1px solid var(--border-strong);
+  border-radius:11px;
+  background:rgba(253,251,249,0.75);
+  color:var(--deep);
+  transition:border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  outline:none;width:100%;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.7), 0 1px 2px rgba(44,36,32,0.02);
+}
+input::placeholder,textarea::placeholder{color:var(--slate-soft);font-weight:300;}
+input:hover,select:hover,textarea:hover{border-color:rgba(155,123,138,0.40);background:var(--pearl);}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--mauve);
+  background:var(--pearl);
+  box-shadow:var(--glow-focus), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+textarea{resize:vertical;min-height:84px;line-height:1.6;}
+select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' stroke='%239B7B8A' stroke-width='1.5' fill='none' stroke-linecap='round'/></svg>");background-repeat:no-repeat;background-position:right 16px center;padding-right:36px;}
+label{
+  font-size:10px;font-weight:500;color:var(--slate);
+  letter-spacing:0.14em;text-transform:uppercase;
+}
+label .opt{font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--slate-soft);font-style:italic;margin-left:4px;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:500px){.fgrid{grid-template-columns:1fr;}}
+.field{display:flex;flex-direction:column;gap:8px;}
+.field.full{grid-column:1/-1;}
+
+/* ── Pills (refined) ── */
+.pill-group{display:flex;flex-wrap:wrap;gap:8px;}
+.pill{
+  padding:8px 16px;border-radius:24px;
+  border:1px solid var(--border-strong);
+  background:rgba(253,251,249,0.7);
+  font-size:12px;color:var(--slate);cursor:pointer;
+  transition:all 0.2s ease;user-select:none;
+  letter-spacing:0.02em;
+}
+.pill:hover{border-color:var(--mauve);color:var(--mauve);background:var(--pearl);}
+.pill.selected{
+  background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));
+  border-color:var(--mauve-deep);color:white;
+  box-shadow:0 4px 12px rgba(155,123,138,0.30), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+
+/* ── PRIMARY CTA — the hero action ── */
+.btn-p{
+  position:relative;
+  padding:20px 24px;
+  background:linear-gradient(180deg,#3a2e28 0%,var(--deep) 55%,var(--deep-2) 100%);
+  color:var(--cream);
+  border:none;border-radius:14px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:300;
+  letter-spacing:0.18em;
+  cursor:pointer;
+  transition:transform 0.25s cubic-bezier(.2,.7,.2,1), box-shadow 0.3s;
+  width:100%;
+  box-shadow:var(--shadow-cta);
+  overflow:hidden;
+  isolation:isolate;
+}
+/* Soft inner top-light + bottom mauve glow */
+.btn-p::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255,222,206,0.22), transparent 60%),
+    radial-gradient(120% 80% at 50% 110%, rgba(155,123,138,0.30), transparent 60%);
+  pointer-events:none;z-index:0;
+}
+/* Slow sheen sweep on hover */
+.btn-p::after{
+  content:'';position:absolute;top:0;left:-40%;width:30%;height:100%;
+  background:linear-gradient(110deg, transparent 0%, rgba(255,236,222,0.18) 50%, transparent 100%);
+  transform:skewX(-18deg);
+  transition:left 0.9s cubic-bezier(.2,.7,.2,1);
+  pointer-events:none;z-index:1;
+}
+.btn-p:hover{
+  transform:translateY(-2px);
+  box-shadow:0 22px 50px rgba(44,36,32,0.28), 0 8px 18px rgba(155,123,138,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+.btn-p:hover::after{left:130%;}
+.btn-p:active{transform:translateY(0);}
+.btn-p:disabled{opacity:0.45;cursor:not-allowed;transform:none;}
+.btn-p .bt{position:relative;z-index:2;display:inline-flex;align-items:center;gap:14px;justify-content:center;}
+.btn-p .bt-mark{font-style:italic;font-size:14px;letter-spacing:0;opacity:0.6;color:var(--rose);}
+
+.btn-s{
+  padding:11px 18px;background:rgba(232,213,204,0.55);color:var(--deep);border:1px solid rgba(255,255,255,0.5);
+  border-radius:11px;font-size:12px;font-weight:500;cursor:pointer;transition:all 0.2s;letter-spacing:0.04em;
+}
+.btn-s:hover{background:var(--rose);color:white;border-color:var(--rose);}
+.btn-g{
+  padding:8px 13px;background:rgba(253,251,249,0.6);
+  border:1px solid var(--border-strong);border-radius:9px;
+  font-size:11px;color:var(--mauve);cursor:pointer;transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:5px;font-family:'DM Sans',sans-serif;
+  letter-spacing:0.05em;
+}
+.btn-g:hover{background:var(--pearl);border-color:var(--mauve);}
+.btn-g.sv{background:var(--mauve);color:white;border-color:var(--mauve);}
+
+.li{display:none;width:16px;height:16px;border:2px solid rgba(253,251,249,0.30);border-top-color:var(--cream);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto;}
+.loading .bt{display:none;}.loading .li{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+/* ── UPLOAD ZONE — the core interaction ── */
+.uz{
+  position:relative;
+  border:1px solid rgba(201,168,154,0.30);
+  border-radius:20px;
+  padding:32px 24px 24px;
+  background:
+    radial-gradient(420px 220px at 50% 0%, rgba(255,237,228,0.65), transparent 70%),
+    linear-gradient(180deg, rgba(253,251,249,0.85), rgba(248,238,232,0.65));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  box-shadow:
+    var(--shadow-md),
+    inset 0 1px 0 rgba(255,255,255,0.7),
+    inset 0 0 0 1px rgba(255,255,255,0.35);
+  cursor:pointer;
+  transition:transform 0.3s cubic-bezier(.2,.7,.2,1), box-shadow 0.3s, border-color 0.3s;
+  overflow:hidden;
+}
+.uz::before{
+  /* soft inner pastel halo */
+  content:'';position:absolute;inset:1px;border-radius:19px;pointer-events:none;
+  background:radial-gradient(60% 40% at 50% 0%, rgba(201,168,154,0.10), transparent 70%);
+}
+.uz:hover,.uz.dv{
+  border-color:var(--rose);
+  box-shadow:
+    0 18px 50px rgba(155,123,138,0.18),
+    0 6px 18px rgba(201,168,154,0.18),
+    inset 0 1px 0 rgba(255,255,255,0.8);
+  transform:translateY(-2px);
+}
+.uz input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;z-index:5;}
+
+/* Layered visual mark inside the dropzone */
+.uz-visual{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;text-align:center;
+  padding:8px 0 18px;
+}
+.uz-mark{
+  width:64px;height:64px;border-radius:18px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), transparent 60%),
+    linear-gradient(135deg, #F2DCD0 0%, #E8D5CC 50%, #D9C3D0 100%);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;
+  box-shadow:
+    0 12px 28px rgba(201,168,154,0.32),
+    0 2px 6px rgba(44,36,32,0.06),
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -8px 16px rgba(201,168,154,0.18);
+  position:relative;
+}
+.uz-mark::after{
+  /* small sparkle */
+  content:'';position:absolute;top:-3px;right:-3px;width:10px;height:10px;
+  background:radial-gradient(circle, #FFF 0%, #F2DCD0 60%, transparent 70%);
+  border-radius:50%;
+  box-shadow:0 0 12px rgba(255,222,206,0.8);
+}
+.uz-mark svg{width:30px;height:30px;color:var(--mauve-deep);}
+.uz-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:19px;font-weight:300;
+  color:var(--deep);
+  letter-spacing:0.02em;
+  margin-bottom:6px;
+}
+.uz-title em{font-style:italic;color:var(--mauve);}
+.uz-sub{font-size:11.5px;color:var(--slate);letter-spacing:0.04em;}
+.uz-sub .dot{margin:0 8px;opacity:0.45;}
+
+/* Hide the old verbose markup inside .uz (we replace with .uz-visual) */
+.uz .ut,.uz .ui,.uz .utx,.uz .uh{display:none;}
+
+/* Checklist inside upload zone (refined) */
+.cl{
+  position:relative;z-index:1;
+  background:rgba(168,181,160,0.10);
+  border:1px solid rgba(168,181,160,0.22);
+  border-radius:13px;
+  padding:13px 16px;
+  backdrop-filter:blur(8px);
+}
+.clt{
+  font-size:10px;letter-spacing:0.16em;text-transform:uppercase;
+  color:#6B7F5E;font-weight:500;margin-bottom:9px;
+  display:flex;align-items:center;gap:6px;
+}
+.clg{display:grid;grid-template-columns:1fr 1fr;gap:6px 18px;}
+@media(max-width:480px){.clg{grid-template-columns:1fr;}}
+.ci{font-size:11.5px;color:var(--slate);display:flex;gap:7px;align-items:baseline;line-height:1.5;}
+.cd{color:var(--sage);flex-shrink:0;font-size:9px;}
+.co{font-size:10px;color:var(--rose);font-style:italic;}
+
+/* Image previews */
+.prevs{display:flex;flex-wrap:wrap;gap:9px;margin-top:14px;}
+.pt{
+  position:relative;width:72px;height:72px;border-radius:11px;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.55);
+  box-shadow:0 6px 16px rgba(44,36,32,0.10);
+  flex-shrink:0;
+}
+.pt img{width:100%;height:100%;object-fit:cover;}
+.pt .rm{
+  position:absolute;top:4px;right:4px;width:18px;height:18px;
+  background:rgba(44,36,32,0.78);color:white;
+  border:none;border-radius:50%;
+  font-size:10px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+  transition:background 0.2s;
+}
+.pt .rm:hover{background:var(--mauve);}
+
+.pr{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:6px;}
+.pm{font-size:12px;color:var(--mauve);font-style:italic;font-family:'Cormorant Garamond',serif;}
+.pv{font-size:11px;}
+
+/* Soft warning chip */
+.sw{
+  display:none;
+  background:linear-gradient(180deg, #FFF6E0, #FBEAC4);
+  border:1px solid rgba(180,140,60,0.22);
+  border-radius:11px;padding:11px 14px;font-size:12px;color:#6B4C04;margin-top:14px;
+  box-shadow:0 4px 14px rgba(180,140,60,0.10);
+}
+.sw.show{display:block;}
+.sw strong{display:block;margin-bottom:3px;color:#5A3F02;letter-spacing:0.04em;}
+/* ── Results header ── */
+.rh{
+  text-align:center;padding:32px 22px 26px;
+  background:
+    radial-gradient(360px 200px at 50% 0%, rgba(255,237,228,0.7), transparent 75%),
+    var(--glass-strong);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:22px;margin-bottom:14px;
+  box-shadow:var(--shadow-md);
+}
+.rin{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;font-style:italic;margin-bottom:4px;letter-spacing:0.01em;}
+.sc{
+  width:96px;height:96px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin:16px auto 12px;border:3px solid currentColor;
+  background:rgba(253,251,249,0.6);
+  box-shadow:0 8px 24px rgba(155,123,138,0.16), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+.sn{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:300;line-height:1;}
+.ss{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.65;margin-top:2px;}
+.db{display:inline-block;padding:6px 18px;border-radius:22px;font-size:12px;font-weight:500;letter-spacing:0.08em;}
+.ds{background:#DDECE0;color:#2D6A3F;}.db2{background:#FBEDC8;color:#856404;}.dr{background:#FBE2CF;color:#8B4513;}.dsk{background:#F6D7DA;color:#721C24;}
+.rr{font-size:12.5px;color:var(--slate);margin-top:10px;font-style:italic;padding:0 14px;line-height:1.7;}
+.fb{background:linear-gradient(180deg,#FFF6E0,#FBEAC4);border:1px solid rgba(180,140,60,0.22);border-radius:13px;padding:13px 16px;margin-bottom:14px;}
+.fbt{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:#856404;font-weight:500;margin-bottom:6px;}
+.fi{font-size:12px;color:#6B4C04;padding:2px 0;display:flex;gap:6px;}
+
+/* Pillar score cards */
+.pcols{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
+@media(max-width:480px){.pcols{grid-template-columns:1fr;}}
+.pc{
+  background:var(--glass-strong);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:16px;padding:16px;
+  box-shadow:var(--shadow-md);
+}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.pn{font-size:10px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--slate);}
+.pw{font-size:9px;color:var(--slate-soft);letter-spacing:0.10em;margin-top:2px;}
+.ps{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;color:var(--mauve);line-height:1;}
+.pb{height:3px;background:rgba(232,213,204,0.6);border-radius:3px;overflow:hidden;margin-bottom:8px;}
+.pf{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--rose),var(--mauve));transition:width 1s cubic-bezier(.2,.7,.2,1);}
+.pnt{font-size:11.5px;color:var(--slate);line-height:1.6;}
+.oo{display:inline-flex;align-items:center;gap:5px;background:rgba(168,181,160,0.18);border:1px solid rgba(168,181,160,0.30);border-radius:14px;padding:4px 11px;font-size:11px;margin-bottom:4px;color:#4f6048;letter-spacing:0.04em;}
+/* ── Log / spend / brand / profile shared glass cards ── */
+.li2,.st,.cw,.bc,.prof-sec{
+  background:var(--glass-strong);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.55);
+  box-shadow:var(--shadow-md);
+}
+.li2{border-radius:16px;padding:16px 18px;margin-bottom:11px;}
+.lih{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.lin{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:300;font-style:italic;}
+.lim{font-size:11px;color:var(--slate);display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;align-items:center;}
+.lt{padding:3px 10px;border-radius:10px;background:rgba(232,213,204,0.55);font-size:11px;color:var(--deep);letter-spacing:0.03em;}
+.lsc{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;}
+.lfb{background:rgba(168,181,160,0.10);border:1px solid rgba(168,181,160,0.22);border-radius:11px;padding:11px 13px;margin-top:9px;font-size:12px;color:var(--slate);line-height:1.7;}
+.lfbh{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+
+/* Spend stats */
+.ss2{display:grid;grid-template-columns:repeat(3,1fr);gap:11px;margin-bottom:18px;}
+@media(max-width:480px){.ss2{grid-template-columns:1fr 1fr;}}
+.st{border-radius:16px;padding:18px 14px;text-align:center;}
+.sv2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;letter-spacing:0.01em;}
+.sl{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--slate);margin-top:4px;}
+.su{font-size:11px;color:var(--mauve);font-style:italic;margin-top:3px;}
+.cw{border-radius:16px;padding:18px;margin-bottom:14px;}
+.ct{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--mauve);margin-bottom:16px;}
+.cbars{display:flex;align-items:flex-end;gap:6px;height:120px;}
+.cc{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.cbw{flex:1;display:flex;align-items:flex-end;width:100%;}
+.cb{width:100%;border-radius:4px 4px 0 0;background:linear-gradient(180deg,var(--mauve),var(--rose));transition:height 0.7s ease;min-height:2px;position:relative;cursor:pointer;}
+.cb:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);background:var(--deep);color:white;font-size:10px;padding:3px 8px;border-radius:5px;white-space:nowrap;z-index:10;}
+.cb.cm2{background:linear-gradient(180deg,var(--sage),#7a9a72);}
+.cbl{font-size:9px;color:var(--slate);text-align:center;letter-spacing:0.06em;}
+.bll{font-size:10px;color:var(--rose);text-align:right;margin-top:6px;font-style:italic;letter-spacing:0.04em;}
+
+/* Profile */
+.prof-sec{border-radius:18px;padding:22px;margin-bottom:14px;position:relative;}
+.prof-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;margin-bottom:16px;letter-spacing:0.01em;}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:500px){.pgrid{grid-template-columns:repeat(2,1fr);}}
+.pi{display:flex;flex-direction:column;gap:3px;}
+.plb{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--slate);}
+.pv{font-size:16px;font-family:'Cormorant Garamond',serif;color:var(--deep);}
+.pin{display:none;font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 11px;border:1px solid var(--mauve);border-radius:9px;background:var(--pearl);color:var(--deep);outline:none;width:100%;}
+.em .pv{display:none;}.em .pin{display:block;}
+.sw2{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
+.sw3{width:28px;height:28px;border-radius:50%;border:2px solid white;box-shadow:0 0 0 1px var(--border-strong), 0 2px 6px rgba(44,36,32,0.08);}
+.at{display:inline-block;padding:4px 11px;border-radius:12px;font-size:11px;background:rgba(201,168,154,0.18);color:var(--rose-deep);border:1px solid rgba(201,168,154,0.30);margin:3px 3px 0 0;letter-spacing:0.03em;}
+.bsec{margin-bottom:18px;}
+.btl{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--slate);margin-bottom:10px;font-weight:500;}
+.bc{border-radius:13px;padding:13px 16px;margin-bottom:9px;}
+.bch{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.bnr{display:flex;align-items:center;gap:9px;}
+.bnm{font-size:15px;font-weight:500;letter-spacing:0.01em;}
+.btb{padding:3px 9px;border-radius:8px;font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;}
+.tbs{background:rgba(168,181,160,0.22);color:#3d6035;}.tbu{background:rgba(184,176,204,0.22);color:#5a4d7a;}.tbst{background:rgba(232,213,204,0.50);color:#8B5A4A;}.tbav{background:rgba(248,215,218,0.45);color:#7a3030;}.tbun{background:rgba(107,114,128,0.12);color:var(--slate);}
+.bth{font-size:16px;}
+.bnt{font-size:12px;color:var(--slate);line-height:1.6;margin-bottom:5px;}
+.bbf{font-size:10px;color:var(--slate-soft);margin-top:4px;letter-spacing:0.04em;}
+.bbfor{font-size:11px;color:var(--mauve);font-style:italic;}
+
+/* Chat */
+.cm{max-height:240px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;margin-bottom:11px;}
+.cm::-webkit-scrollbar{width:4px;}.cm::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:3px;}
+.msg{padding:10px 14px;border-radius:13px;font-size:13px;line-height:1.55;max-width:88%;}
+.msg.user{background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));color:white;align-self:flex-end;border-bottom-right-radius:4px;box-shadow:0 4px 10px rgba(155,123,138,0.20);}
+.msg.ai{background:rgba(232,213,204,0.55);color:var(--deep);align-self:flex-start;border-bottom-left-radius:4px;}
+.msg.loading{display:flex;gap:5px;align-items:center;padding:14px;}
+.dp span{display:inline-block;width:6px;height:6px;background:var(--mauve);border-radius:50%;animation:pulse 1.2s ease-in-out infinite;}
+.dp span:nth-child(2){animation-delay:0.2s;}.dp span:nth-child(3){animation-delay:0.4s;}
+@keyframes pulse{0%,80%,100%{transform:scale(0.6);opacity:0.4;}40%{transform:scale(1);opacity:1;}}
+.cr{display:flex;gap:8px;}
+.cr input{flex:1;padding:11px 14px;}
+.sb{padding:10px 14px;background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));color:white;border:none;border-radius:10px;cursor:pointer;font-size:14px;flex-shrink:0;transition:transform 0.2s, box-shadow 0.2s;box-shadow:0 4px 12px rgba(155,123,138,0.25);}
+.sb:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(155,123,138,0.30);}
+.br{display:flex;gap:11px;margin-top:14px;}
+.le{text-align:center;padding:42px 22px;color:var(--slate);font-size:13px;font-style:italic;}
+
+/* Modals */
+.mo{position:fixed;inset:0;background:rgba(44,36,32,0.50);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;}
+.mo.hidden{display:none;}
+.md{background:var(--glass-strong);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,0.6);border-radius:20px;padding:26px 24px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);}
+.mdt{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;margin-bottom:16px;letter-spacing:0.01em;}
+.mc{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--slate);margin-top:-3px;transition:color 0.2s;}
+.mc:hover{color:var(--mauve);}
+.mf{margin-bottom:14px;}
+.mf label{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--slate);font-weight:500;display:block;margin-bottom:6px;}
+.ma{display:flex;gap:8px;margin-top:18px;}
+.ma .btn-p{flex:1;font-size:16px;padding:14px;letter-spacing:0.12em;}
+.str{display:flex;gap:6px;margin-top:5px;}
+.star{font-size:22px;cursor:pointer;opacity:0.25;transition:opacity 0.15s, transform 0.15s;color:var(--rose);}
+.star:hover{transform:scale(1.1);}
+.star.active{opacity:1;}
+.tbtn{padding:9px 18px;border-radius:20px;border:1px solid var(--border-strong);background:var(--pearl);font-size:18px;cursor:pointer;transition:all 0.2s;}
+.tbtn.sup{background:#DDECE0;border-color:#7BA683;}
+.tbtn.sdn{background:#F6D7DA;border-color:#C97A82;}
+.tr{display:flex;gap:10px;margin-top:5px;align-items:center;}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(18px);background:var(--deep);color:white;padding:11px 22px;border-radius:22px;font-size:12px;opacity:0;transition:all 0.3s;z-index:300;pointer-events:none;letter-spacing:0.04em;box-shadow:0 12px 30px rgba(44,36,32,0.25);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ── Currency selector (inline with price) ── */
+.price-row{display:flex;gap:10px;align-items:stretch;}
+.price-row input{flex:1;}
+.cur-sel{
+  flex:0 0 auto;width:96px;
+  font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;
+  letter-spacing:0.06em;
+  padding:13px 30px 13px 14px;
+  border:1px solid var(--border-strong);border-radius:11px;
+  background:rgba(253,251,249,0.75);color:var(--mauve);
+  cursor:pointer;
+}
+.cur-sel:focus{border-color:var(--mauve);box-shadow:var(--glow-focus);}
+
+/* ── Recent evaluations ── */
+.rec-head{
+  display:flex;justify-content:space-between;align-items:flex-end;
+  margin-bottom:22px;gap:14px;
+}
+.rec-head h2{
+  font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;
+  letter-spacing:0.01em;line-height:1;
+}
+.rec-head .sub{font-size:11px;color:var(--slate);margin-top:6px;letter-spacing:0.04em;}
+.rec-empty{
+  text-align:center;padding:52px 24px;
+  background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px dashed rgba(155,123,138,0.30);border-radius:18px;
+}
+.rec-empty .em-mark{
+  width:48px;height:48px;border-radius:14px;margin:0 auto 14px;
+  background:linear-gradient(135deg,#F2DCD0,#D9C3D0);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 20px rgba(201,168,154,0.22), inset 0 1px 0 rgba(255,255,255,0.8);
+  font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--mauve);font-style:italic;
+}
+.rec-empty p{font-size:13px;color:var(--slate);font-style:italic;line-height:1.65;max-width:280px;margin:0 auto;}
+.rec-list{display:flex;flex-direction:column;gap:11px;}
+
+.eval-card{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  grid-template-areas:'sc body actions';
+  gap:16px;align-items:center;
+  padding:16px 18px;
+  background:var(--glass-strong);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:16px;
+  box-shadow:var(--shadow-md);
+  transition:transform 0.25s cubic-bezier(.2,.7,.2,1), box-shadow 0.25s;
+}
+.eval-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.eval-card.bought{opacity:0.78;}
+.eval-card.bought .ev-score{filter:grayscale(0.15);}
+.ev-score{
+  grid-area:sc;
+  width:60px;height:60px;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  border:2.5px solid currentColor;
+  background:rgba(253,251,249,0.7);
+  box-shadow:0 4px 12px rgba(155,123,138,0.14), inset 0 1px 0 rgba(255,255,255,0.7);
+  flex-shrink:0;
+}
+.ev-sn{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;line-height:1;}
+.ev-ss{font-size:7px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.6;margin-top:1px;}
+.ev-body{grid-area:body;min-width:0;}
+.ev-name{
+  font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;
+  letter-spacing:0.01em;color:var(--deep);
+  margin-bottom:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.ev-meta{font-size:11px;color:var(--slate);display:flex;flex-wrap:wrap;gap:8px;align-items:center;letter-spacing:0.03em;}
+.ev-meta .dot{opacity:0.4;}
+.ev-meta .price{color:var(--mauve);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:13px;letter-spacing:0;}
+.ev-thumbs{display:flex;gap:5px;margin-top:8px;}
+.ev-thumb{width:32px;height:32px;border-radius:7px;border:1px solid rgba(255,255,255,0.6);box-shadow:0 2px 6px rgba(44,36,32,0.08);object-fit:cover;}
+.ev-thumb-more{
+  width:32px;height:32px;border-radius:7px;background:rgba(232,213,204,0.45);
+  border:1px solid rgba(255,255,255,0.6);
+  font-size:10px;color:var(--mauve);display:flex;align-items:center;justify-content:center;
+  letter-spacing:0.02em;font-weight:500;
+}
+.ev-actions{grid-area:actions;display:flex;flex-direction:column;gap:6px;align-items:flex-end;}
+.ev-bought-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:10px;
+  background:rgba(168,181,160,0.22);color:#4f6048;
+  font-size:10px;letter-spacing:0.14em;text-transform:uppercase;font-weight:500;
+}
+.ev-decision{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--slate);margin-top:2px;text-align:right;
+}
+@media(max-width:560px){
+  .eval-card{grid-template-columns:auto 1fr;grid-template-areas:'sc body' 'actions actions';gap:12px;}
+  .ev-actions{align-items:stretch;flex-direction:row;justify-content:flex-end;}
+}
+
+/* ── Recent strip on Evaluate (compact) ── */
+.recent-strip{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:26px;padding:14px 16px;
+  background:rgba(253,251,249,0.55);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.5);
+  border-radius:14px;
+  box-shadow:var(--shadow);
+}
+.recent-strip.hidden{display:none;}
+.rs-label{
+  font-size:10px;letter-spacing:0.20em;text-transform:uppercase;color:var(--mauve);
+  font-weight:500;flex-shrink:0;
+}
+.rs-items{display:flex;gap:8px;flex:1;overflow-x:auto;scrollbar-width:none;}
+.rs-items::-webkit-scrollbar{display:none;}
+.rs-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px 6px 6px;border-radius:24px;
+  background:rgba(253,251,249,0.85);
+  border:1px solid var(--border-strong);
+  cursor:pointer;flex-shrink:0;
+  transition:transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+.rs-item:hover{transform:translateY(-1px);border-color:var(--mauve);box-shadow:0 4px 10px rgba(155,123,138,0.14);}
+.rs-item .rs-sc{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:400;
+  color:white;flex-shrink:0;
+}
+.rs-item .rs-nm{
+  font-size:12px;color:var(--deep);max-width:120px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.rs-all{font-size:10px;color:var(--mauve);text-decoration:underline;text-underline-offset:2px;cursor:pointer;flex-shrink:0;letter-spacing:0.06em;}
+@media(max-width:560px){.rs-label{display:none;}}
+
+/* ── Sheet (full-page slide-up overlay for Results & Profile) ── */
+.sheet{
+  position:fixed;inset:0;z-index:250;
+  background:rgba(44,36,32,0.45);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  display:flex;justify-content:center;align-items:flex-end;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.3s cubic-bezier(.2,.7,.2,1);
+}
+.sheet.open{opacity:1;pointer-events:auto;}
+.sheet-inner{
+  width:100%;max-width:760px;max-height:96vh;
+  background:
+    radial-gradient(820px 620px at 92% -8%, rgba(232,213,204,0.60), transparent 60%),
+    radial-gradient(720px 700px at -10% 38%, rgba(196,184,210,0.32), transparent 60%),
+    var(--cream);
+  border-top-left-radius:28px;border-top-right-radius:28px;
+  box-shadow:0 -24px 60px rgba(44,36,32,0.25);
+  overflow-y:auto;
+  transform:translateY(40px);
+  transition:transform 0.35s cubic-bezier(.2,.7,.2,1);
+  position:relative;
+}
+.sheet.open .sheet-inner{transform:translateY(0);}
+@media(min-width:720px){
+  .sheet{align-items:center;padding:30px;}
+  .sheet-inner{max-height:92vh;border-radius:24px;transform:translateY(20px) scale(0.98);}
+  .sheet.open .sheet-inner{transform:translateY(0) scale(1);}
+}
+.sheet-bar{
+  position:sticky;top:0;z-index:5;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px;
+  background:linear-gradient(180deg, rgba(253,251,249,0.92), rgba(253,251,249,0.78));
+  backdrop-filter:saturate(140%) blur(16px);-webkit-backdrop-filter:saturate(140%) blur(16px);
+  border-bottom:1px solid rgba(155,123,138,0.10);
+}
+.sheet-handle{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:44px;height:4px;border-radius:3px;background:rgba(155,123,138,0.25);}
+@media(min-width:720px){.sheet-handle{display:none;}}
+.sheet-title{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;letter-spacing:0.06em;color:var(--deep);text-transform:uppercase;}
+.sheet-close{
+  width:34px;height:34px;border-radius:50%;
+  background:rgba(253,251,249,0.85);
+  border:1px solid var(--border-strong);
+  color:var(--slate);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all 0.2s;
+}
+.sheet-close:hover{color:var(--mauve);border-color:var(--mauve);background:var(--pearl);}
+.sheet-body{padding:24px 22px 80px;}
+
+/* ── Header: avatar/profile button ── */
+.hdr-actions{display:flex;align-items:center;gap:8px;}
+.hdr-icon-btn{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid var(--border-strong);
+  background:rgba(253,251,249,0.7);
+  color:var(--slate);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+  font-size:14px;
+}
+.hdr-icon-btn:hover{color:var(--mauve);border-color:var(--mauve);background:var(--pearl);}
+.hdr-icon-btn svg{width:16px;height:16px;}
+
+/* ── History filter chips ── */
+.filter-row{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  margin-bottom:22px;flex-wrap:wrap;
+}
+.filter-chips{display:flex;gap:6px;}
+.fchip{
+  padding:7px 16px;border-radius:20px;
+  border:1px solid var(--border-strong);
+  background:rgba(253,251,249,0.7);
+  font-size:11px;letter-spacing:0.10em;text-transform:uppercase;
+  color:var(--slate);cursor:pointer;font-weight:500;
+  transition:all 0.2s;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.fchip:hover{color:var(--mauve);border-color:var(--mauve);}
+.fchip.active{
+  background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));
+  color:white;border-color:var(--mauve-deep);
+  box-shadow:0 4px 10px rgba(155,123,138,0.22);
+}
+.fchip .count{
+  font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:400;
+  opacity:0.7;letter-spacing:0;text-transform:none;
+}
+.fchip.active .count{opacity:0.95;}
+
+/* History card variants — a bought card gets a small “Feedback” affordance */
+.hist-list{display:flex;flex-direction:column;gap:11px;}
+.eval-card .ev-feedback-row{margin-top:10px;}
+.eval-card .ev-fb-mini{
+  font-size:11px;color:var(--slate);font-style:italic;
+  background:rgba(168,181,160,0.10);
+  border:1px solid rgba(168,181,160,0.22);
+  border-radius:9px;padding:8px 11px;line-height:1.6;
+}
+.eval-card .ev-fb-mini .stars{color:var(--rose);font-style:normal;}
+
+/* ─────────────────────────────────────────────────────────────
+   PREMIUM REFINEMENT LAYER
+   Targeted overrides for type, color, density & component finish.
+   ───────────────────────────────────────────────────────────── */
+
+/* Tabular figures for every numeric surface — keeps scores, prices, counts aligned */
+.sn,.ev-sn,.ps,.lsc,.sv2,.pv,.cnt,.rs-sc,.ev-meta .price,.fchip .count,
+.uz-sub,.ev-meta,.rr,.lim,.bbf,.bll,.cbl,#pmyr,#pverd,
+input[type="number"]{font-variant-numeric:tabular-nums;}
+
+/* Cooler, richer base shades (kept inside palette) */
+:root{
+  --deep:#2A2320;
+  --deep-2:#181311;
+  --mauve:#9A7D8B;
+  --mauve-deep:#7A5D6C;
+  --slate:#7A6E6F;
+  --slate-soft:#A89B9C;
+  --rose:#C5A597;
+  --rose-deep:#B58F82;
+  --cream:#FBF7F3;
+  --pearl:#FFFEFB;
+  --champagne:#C9A88C;
+  --border-strong:rgba(155,123,138,0.22);
+  --shadow-md:0 1px 2px rgba(44,36,32,0.04), 0 12px 32px rgba(155,123,138,0.10);
+  --shadow-lg:0 2px 4px rgba(44,36,32,0.05), 0 28px 64px rgba(155,123,138,0.16);
+  --shadow-cta:0 1px 0 rgba(255,255,255,0.10) inset, 0 -1px 0 rgba(0,0,0,0.18) inset, 0 16px 40px rgba(44,36,32,0.28), 0 4px 12px rgba(155,123,138,0.20);
+}
+
+/* Header: tighter, more editorial */
+header{padding:16px 28px;}
+.brand-mark{width:34px;height:34px;border-radius:9px;}
+.logo{font-size:23px;letter-spacing:0.22em;font-weight:300;}
+.logo span{color:var(--rose-deep);}
+.tagline{font-size:9.5px;letter-spacing:0.30em;color:var(--slate-soft);}
+.hdr-actions{gap:10px;}
+.hdr-icon-btn,.hdr-btn{height:34px;}
+.hdr-icon-btn{width:34px;}
+.hdr-btn{padding:0 13px;font-size:10.5px;letter-spacing:0.18em;text-transform:uppercase;}
+
+/* Container & sheets — a little more breathing room */
+.container{max-width:780px;padding:42px 28px 120px;}
+.sheet-body{padding:30px 28px 96px;}
+.sheet-bar{padding:14px 28px;}
+
+/* Tabs: cleaner pill set — more pronounced active, subtler inactive */
+.tabs{padding:5px;border-radius:16px;margin-bottom:38px;background:rgba(232,213,204,0.42);}
+.tab{font-size:10.5px;letter-spacing:0.18em;padding:11px 10px;color:var(--slate);font-weight:500;}
+.tab.active{
+  color:var(--deep);
+  background:var(--pearl);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.6) inset,
+    0 -1px 0 rgba(155,123,138,0.05) inset,
+    0 4px 14px rgba(44,36,32,0.07),
+    0 1px 3px rgba(44,36,32,0.04);
+}
+
+/* Eyebrow sections — numeric tag pulled to a serif italic monogram dot */
+.slabel{
+  font-size:10px;letter-spacing:0.26em;margin-bottom:18px;margin-top:42px;
+  color:var(--slate);
+}
+.slabel::after{
+  background:linear-gradient(90deg, rgba(155,123,138,0.18), transparent 80%);
+  height:1px;
+}
+.slabel .num{
+  font-size:14px;font-style:italic;color:var(--rose-deep);opacity:0.9;
+  letter-spacing:0;font-weight:400;
+  font-variant-numeric:oldstyle-nums;
+  display:inline-flex;align-items:baseline;gap:5px;
+}
+.slabel .num::after{content:'·';color:var(--rose);font-style:normal;font-size:13px;}
+
+/* Section dividers as thin scalloped hairlines */
+.card,.li2,.st,.cw,.bc,.prof-sec,.pc{
+  border:1px solid rgba(155,123,138,0.10);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    var(--shadow-md);
+}
+
+/* Labels: tighter, more confident */
+label{font-size:9.5px;letter-spacing:0.22em;color:var(--slate);}
+label .opt{font-size:10px;letter-spacing:0.01em;color:var(--slate-soft);}
+
+/* Inputs: more refined focus, hairline border, generous padding */
+input,select,textarea{
+  border:1px solid rgba(155,123,138,0.18);
+  border-radius:12px;
+  padding:14px 16px;
+  font-size:14px;
+  background:rgba(255,254,251,0.6);
+  transition:border-color 0.25s, box-shadow 0.3s, background 0.25s;
+}
+input:focus,select:focus,textarea:focus{
+  border-color:var(--mauve);
+  background:var(--pearl);
+  box-shadow:0 0 0 5px rgba(155,123,138,0.08), inset 0 1px 0 rgba(255,255,255,0.7);
+}
+.cur-sel{padding:14px 32px 14px 14px;width:108px;}
+
+/* Pills — add a tiny dot to selected, refine hover */
+.pill{padding:9px 18px;font-size:12px;letter-spacing:0.03em;border-radius:24px;}
+.pill.selected{padding-left:14px;}
+.pill.selected::before{
+  content:'';display:inline-block;
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,255,255,0.85);
+  margin-right:8px;vertical-align:middle;transform:translateY(-1px);
+}
+
+/* Filter chips: tabular counts and tighter rhythm */
+.fchip{padding:8px 14px;font-size:10.5px;letter-spacing:0.16em;}
+.fchip .count{font-size:12px;color:var(--rose-deep);margin-left:2px;}
+.fchip.active .count{color:rgba(255,255,255,0.95);}
+
+/* Primary CTA — no decorative chevrons; cleaner letter-spacing and inner highlight */
+.btn-p{
+  padding:22px 28px;
+  border-radius:16px;
+  font-size:18px;
+  letter-spacing:0.28em;
+  font-weight:300;
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(255,236,222,0.10), transparent 55%),
+    linear-gradient(180deg, #3A2E28 0%, var(--deep) 60%, var(--deep-2) 100%);
+}
+.btn-p .bt-mark{display:none;}
+.btn-p::before{
+  /* refined top highlight */
+  background:linear-gradient(180deg, rgba(255,236,222,0.10), transparent 40%);
+}
+.btn-p:hover{transform:translateY(-2px);}
+
+/* Score circle — add a champagne progress arc that scales with score (set via JS as CSS var) */
+.sc{
+  width:108px;height:108px;border:none;
+  background:
+    conic-gradient(currentColor calc(var(--p,0) * 1%), rgba(155,123,138,0.10) 0),
+    rgba(253,251,249,0.6);
+  box-shadow:
+    0 2px 6px rgba(155,123,138,0.10),
+    0 12px 28px rgba(155,123,138,0.16),
+    inset 0 1px 0 rgba(255,255,255,0.7);
+  position:relative;
+}
+.sc::before{
+  content:'';position:absolute;inset:9px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(253,251,249,0.85) 70%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 14px rgba(155,123,138,0.10);
+}
+.sn{position:relative;font-size:40px;font-weight:300;line-height:1;letter-spacing:-0.01em;}
+.ss{position:relative;font-size:8.5px;letter-spacing:0.30em;opacity:0.55;margin-top:4px;}
+
+/* Decision — tiny dot + label instead of solid block */
+.db{
+  background:transparent !important;color:var(--deep) !important;
+  padding:7px 0 0;font-size:11.5px;letter-spacing:0.22em;text-transform:uppercase;font-weight:500;
+  display:inline-flex;align-items:center;gap:9px;border-radius:0;
+}
+.db::before{
+  content:'';width:7px;height:7px;border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 0 4px rgba(155,123,138,0.10);
+}
+.ds::before{background:#5C8B5A;}
+.db2::before{background:#B68A2C;}
+.dr::before{background:#A1633A;}
+.dsk::before{background:#9C3D45;}
+.ds{color:#3B6A3F !important;}
+.db2{color:#6E5418 !important;}
+.dr{color:#7C4624 !important;}
+.dsk{color:#7A2730 !important;}
+
+/* Results header card */
+.rh{padding:40px 28px 32px;border-radius:24px;}
+.rin{font-size:26px;margin-bottom:10px;}
+.rr{font-size:13px;line-height:1.75;max-width:480px;margin-left:auto;margin-right:auto;}
+
+/* Pillar cards: serif numeral hero, hairline progress, refined notes */
+.pc{padding:18px 18px 16px;border-radius:18px;}
+.pn{font-size:9.5px;letter-spacing:0.22em;}
+.pw{font-size:9px;letter-spacing:0.18em;}
+.ps{font-size:30px;font-weight:300;letter-spacing:-0.01em;line-height:1;}
+.pb{height:2px;background:rgba(155,123,138,0.12);}
+.pf{background:linear-gradient(90deg,var(--champagne),var(--mauve));}
+.pnt{font-size:11.5px;line-height:1.65;}
+
+/* Outfit chip refresh */
+.oo{padding:5px 13px;border-radius:18px;font-size:11px;letter-spacing:0.06em;}
+
+/* Chat */
+.msg{font-size:13.5px;}
+.cr input{padding:13px 16px;}
+.sb{padding:0 16px;height:46px;border-radius:12px;}
+
+/* History card — serif numeral hero, refined meta */
+.eval-card{padding:18px 20px;gap:18px;border-radius:18px;}
+.ev-score{width:64px;height:64px;border:none;
+  background:
+    conic-gradient(currentColor calc(var(--p,0) * 1%), rgba(155,123,138,0.10) 0),
+    rgba(253,251,249,0.7);
+  box-shadow:0 6px 16px rgba(155,123,138,0.12), inset 0 1px 0 rgba(255,255,255,0.7);
+  position:relative;
+}
+.ev-score::before{
+  content:'';position:absolute;inset:5px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(253,251,249,0.88) 70%);
+}
+.ev-sn{position:relative;font-size:23px;letter-spacing:-0.01em;}
+.ev-ss{position:relative;}
+.ev-name{font-size:19px;margin-bottom:6px;}
+.ev-meta{font-size:11px;letter-spacing:0.04em;gap:9px;}
+.ev-meta .price{font-size:14px;}
+.ev-decision{font-size:9.5px;letter-spacing:0.22em;}
+
+/* Score chip in Recent strip */
+.rs-item{padding:5px 13px 5px 5px;}
+.rs-sc{font-size:12.5px;}
+
+/* Profile sheet tweaks */
+.prof-sec{padding:26px;}
+.prof-title{font-size:20px;margin-bottom:18px;letter-spacing:0.01em;}
+.pgrid{gap:18px;}
+.plb{font-size:9.5px;letter-spacing:0.22em;}
+.pv{font-size:17px;letter-spacing:0.01em;}
+.sw3{width:30px;height:30px;}
+.at{padding:5px 12px;font-size:11px;letter-spacing:0.04em;}
+
+/* Section heading for spend/brands/history */
+.panel > .filter-row h2,
+.panel > div > h2{letter-spacing:0.02em;}
+
+/* Spend stats card centerpiece */
+.sv2{font-size:30px;letter-spacing:-0.01em;}
+.sl{font-size:9.5px;letter-spacing:0.22em;}
+
+/* Tabs strip animation — keep gentle */
+.tab{transition:color 0.25s, background 0.25s;}
+
+/* Upload zone: serif headline & cleaner sub */
+.uz{padding:38px 26px 28px;border-radius:22px;}
+.uz-title{font-size:21px;letter-spacing:0.02em;margin-bottom:7px;}
+.uz-sub{font-size:11.5px;letter-spacing:0.06em;color:var(--slate-soft);}
+.uz-mark{width:60px;height:60px;border-radius:17px;margin-bottom:18px;}
+.cl{padding:14px 18px;border-radius:14px;}
+.clt{letter-spacing:0.22em;font-size:9.5px;}
+.ci{font-size:11.5px;letter-spacing:0.02em;}
+
+/* Setup card refinements */
+.setup-card{padding:36px 32px;}
+.setup-title{font-size:26px;}
+.setup-field input{padding:13px 15px;}
+.setup-btn{padding:16px;letter-spacing:0.18em;}
+
+/* Toast — more refined */
+.toast{font-size:11px;letter-spacing:0.16em;text-transform:uppercase;padding:12px 22px;border-radius:24px;}
+
+/* Inline label opt italic spacing */
+label .opt{margin-left:6px;font-style:italic;}
+
+/* Generic kill of bare "·" separators looking choppy — already handled by .dot */
+.dot{margin:0 2px;}
+
+/* Modal refinements (feedback / add brand) */
+.md{padding:30px 28px;border-radius:22px;}
+.mdt{font-size:24px;}
+.mf label{letter-spacing:0.22em;}
+
+/* Sheet bar title */
+.sheet-title{font-size:12px;letter-spacing:0.34em;text-transform:uppercase;color:var(--slate);font-weight:500;font-family:'DM Sans',sans-serif;}
+.sheet-close{width:36px;height:36px;}
+
+/* ── Cart Results ── */
+.cart-results{margin-top:28px;}
+.cart-results-hd{
+  font-family:'Cormorant Garamond',serif;
+  font-size:22px;font-weight:300;letter-spacing:0.01em;
+  color:var(--deep);margin-bottom:20px;
+}
+.cart-results-hd span{
+  font-size:11px;color:var(--slate);letter-spacing:0.10em;
+  font-family:'DM Sans',sans-serif;margin-left:10px;font-style:normal;
+}
+.cr-card{
+  display:grid;
+  grid-template-columns:44px 1fr auto;
+  gap:16px;align-items:start;
+  padding:18px 20px;
+  background:var(--glass-strong);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.55);
+  border-radius:18px;box-shadow:var(--shadow-md);
+  margin-bottom:11px;
+  transition:transform 0.25s cubic-bezier(.2,.7,.2,1), box-shadow 0.25s;
+}
+.cr-card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg);}
+.cr-card.rank-1{border-color:rgba(201,168,154,0.45);box-shadow:var(--shadow-md), 0 0 0 1px rgba(201,168,154,0.20);}
+.cr-rank{display:flex;flex-direction:column;align-items:center;padding-top:3px;}
+.cr-rank-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:30px;font-weight:300;line-height:1;
+  color:var(--deep);letter-spacing:-0.01em;
+}
+.cr-rank-label{font-size:8px;letter-spacing:0.20em;text-transform:uppercase;color:var(--slate-soft);margin-top:3px;}
+.cr-body{min-width:0;}
+.cr-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:18px;font-weight:300;font-style:italic;
+  color:var(--deep);margin-bottom:5px;letter-spacing:0.01em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cr-reason{font-size:12px;color:var(--slate);line-height:1.65;margin-bottom:10px;}
+.cr-concern{font-size:11px;color:#856404;font-style:italic;margin-bottom:9px;}
+.cr-bars{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;}
+.cr-bar-row{display:flex;align-items:center;gap:6px;}
+.cr-bar-lbl{font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--slate-soft);width:50px;flex-shrink:0;}
+.cr-bar-track{flex:1;height:2px;background:rgba(155,123,138,0.12);border-radius:2px;overflow:hidden;}
+.cr-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--champagne),var(--mauve));transition:width 0.9s cubic-bezier(.2,.7,.2,1);}
+.cr-bar-val{font-size:9px;color:var(--slate);width:20px;text-align:right;font-variant-numeric:tabular-nums;}
+.cr-score-col{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding-top:2px;flex-shrink:0;}
+.cr-score-num{
+  font-family:'Cormorant Garamond',serif;
+  font-size:28px;font-weight:300;line-height:1;letter-spacing:-0.01em;
+}
+.cr-decision{font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--slate);text-align:right;}
+@media(max-width:480px){
+  .cr-card{grid-template-columns:38px 1fr;grid-template-rows:auto auto;}
+  .cr-score-col{grid-column:2;flex-direction:row;align-items:center;gap:10px;padding-top:0;}
+  .cr-bars{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="setup-overlay" class="hidden">
+  <div class="setup-card">
+    <button class="setup-close-btn" onclick="document.getElementById('setup-overlay').classList.add('hidden')">×</button>
+    <div class="setup-title">Connect Your Style Lab</div>
+    <div class="setup-sub">YSL uses Supabase to sync your purchase log and brand notes across all devices. One-time setup.</div>
+    <div class="setup-field"><label>Supabase Project URL</label><input type="text" id="sb-url" placeholder="https://xxxx.supabase.co"><div class="setup-hint">Project → Settings → API</div></div>
+    <div class="setup-field"><label>Supabase Anon Key</label><input type="text" id="sb-key" placeholder="eyJhbGciOiJIUzI1NiIs..."><div class="setup-hint">Public anon key — safe to use in browser</div></div>
+    <div class="setup-field"><label>Anthropic API Key <span style="font-weight:400;text-transform:none;letter-spacing:0">(GitHub Pages mode — optional)</span></label><input type="password" id="ak-key" placeholder="sk-ant-..." autocomplete="off"><div class="setup-hint">Stored only in this browser's localStorage. Leave empty on Netlify — the serverless proxy handles the key. Never use on a shared device.</div></div>
+    <button class="setup-btn" onclick="saveSupabaseConfig()">Connect &amp; Save</button>
+    <div class="setup-skip">Using locally for now? <a onclick="skipSetup()">Use local storage</a></div>
+    <details class="setup-schema">
+      <summary>📋 Supabase SQL — run this once in your project</summary>
+      <pre>create table purchases (
+  id uuid default gen_random_uuid() primary key,
+  item_name text,
+  category text,
+  brand text,
+  price_myr numeric,
+  score numeric,
+  decision text,
+  occasions text[],
+  purchased_at timestamptz default now(),
+  feedback_quality integer,
+  feedback_sizing text,
+  feedback_notes text,
+  feedback_thumb text,
+  feedback_at timestamptz
+);
+
+create table brands (
+  id uuid default gen_random_uuid() primary key,
+  name text unique,
+  tier text,
+  best_for text,
+  notes text,
+  thumb text,
+  feedback_count integer default 0,
+  created_at timestamptz default now()
+);
+
+-- NEW: persists every evaluation so they can be revisited across devices.
+create table evaluations (
+  id text primary key,
+  evaluated_at timestamptz default now(),
+  item_name text,
+  category text,
+  price numeric,
+  currency text,
+  price_myr numeric,
+  occ text[],
+  notes text,
+  result jsonb,
+  thumbs jsonb,
+  chat jsonb,
+  bought boolean default false,
+  purchase_id uuid
+);
+
+-- IMPORTANT: the anon key is public — anyone with your project URL
+-- + anon key can read/write these tables. Either keep both strictly
+-- private, or enable Supabase Auth and lock down with RLS:
+--   alter table purchases enable row level security;
+--   alter table brands enable row level security;
+--   alter table evaluations enable row level security;
+--   (then add policies tied to auth.uid())
+-- Note: RLS with a permissive `using (true)` policy gives no real
+-- protection — it needs actual auth to be meaningful.
+      </pre>
+    </details>
+  </div>
+</div>
+
+<!-- FEEDBACK MODAL -->
+<div class="mo hidden" id="fb-modal">
+  <div class="md">
+    <button class="mc" onclick="closeFB()">×</button>
+    <div class="mdt">Add Feedback</div>
+    <input type="hidden" id="fb-pid">
+    <div class="mf"><label>Quality Rating</label><div class="str" id="stars"><span class="star" data-v="1" onclick="setStar(1)">★</span><span class="star" data-v="2" onclick="setStar(2)">★</span><span class="star" data-v="3" onclick="setStar(3)">★</span><span class="star" data-v="4" onclick="setStar(4)">★</span><span class="star" data-v="5" onclick="setStar(5)">★</span></div></div>
+    <div class="mf"><label>Sizing</label><div class="pill-group" id="sz-pills"><div class="pill" onclick="tpS(this)">True to size</div><div class="pill" onclick="tpS(this)">Runs small</div><div class="pill" onclick="tpS(this)">Runs large</div><div class="pill" onclick="tpS(this)">Check measurements</div></div></div>
+    <div class="mf"><label>Notes</label><textarea id="fb-notes" placeholder="e.g. fabric quality, colour accuracy, wash care..."></textarea></div>
+    <div class="mf"><label>Buy from this brand again?</label><div class="tr"><button class="tbtn" id="tb-up" onclick="setThumb('up')">👍</button><button class="tbtn" id="tb-dn" onclick="setThumb('down')">👎</button><span style="font-size:11px;color:var(--slate);align-self:center;margin-left:3px">for this category</span></div></div>
+    <div class="ma"><button class="btn-p" onclick="saveFB()"><span class="bt">Save Feedback</span><div class="li"></div></button></div>
+  </div>
+</div>
+
+<!-- ADD BRAND MODAL -->
+<div class="mo hidden" id="br-modal">
+  <div class="md">
+    <button class="mc" onclick="document.getElementById('br-modal').classList.add('hidden')">×</button>
+    <div class="mdt">Add Brand</div>
+    <div class="mf"><label>Brand Name</label><input type="text" id="nb-name" placeholder="e.g. Zara, MO&amp;Co"></div>
+    <div class="mf"><label>Tier</label><select id="nb-tier"><option value="untested">Untested — trying for first time</option><option value="staple">Staple — reliable basics</option><option value="upgrade">Upgrade — elevated pieces</option><option value="statement">Statement — selective buys</option><option value="avoid">Avoid — poor quality</option></select></div>
+    <div class="mf"><label>Best For (optional)</label><input type="text" id="nb-bf" placeholder="e.g. trousers, structured tops"></div>
+    <div class="mf"><label>Notes (optional)</label><textarea id="nb-notes" placeholder="Any initial observations..."></textarea></div>
+    <div class="ma"><button class="btn-p" onclick="saveNB()"><span class="bt">Add Brand</span><div class="li"></div></button></div>
+  </div>
+</div>
+
+<!-- ── QUICK LOG PURCHASE MODAL ── -->
+<div class="mo hidden" id="log-modal">
+  <div class="md" style="max-width:440px">
+    <button class="mc" onclick="closeLogModal()">×</button>
+    <div class="mdt">Log a Purchase</div>
+    <div class="mf">
+      <label>Photos (optional)</label>
+      <div style="position:relative;border:1.5px dashed var(--border-strong);border-radius:14px;padding:16px;text-align:center;cursor:pointer;background:var(--pearl);transition:border-color 0.2s" id="log-uz">
+        <input type="file" id="log-fi" accept="image/*" multiple onchange="handleLogFiles(this.files)" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--mauve)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;margin:0 auto 6px;display:block"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <div style="font-size:12px;color:var(--slate);letter-spacing:0.04em">Tap to add photos</div>
+      </div>
+      <div id="log-prevs" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"></div>
+    </div>
+    <div class="mf">
+      <label>Item Name *</label>
+      <input type="text" id="log-name" placeholder="e.g. Silk wrap dress">
+    </div>
+    <div class="mf">
+      <label>Category</label>
+      <select id="log-cat">
+        <option value="">— select —</option>
+        <option value="dress">Dress</option>
+        <option value="top">Top</option>
+        <option value="bottom">Bottom</option>
+        <option value="outerwear">Outerwear</option>
+        <option value="shoes">Shoes</option>
+        <option value="bag">Bag</option>
+        <option value="accessories">Accessories</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="mf" style="display:grid;grid-template-columns:1fr 96px;gap:10px;align-items:end">
+      <div>
+        <label>Price</label>
+        <input type="number" id="log-price" placeholder="0.00" min="0" step="0.01">
+      </div>
+      <div>
+        <label>Currency</label>
+        <select id="log-cur"><option>MYR</option><option>USD</option><option>CNY</option><option>SGD</option><option>GBP</option><option>EUR</option><option>JPY</option><option>KRW</option><option>HKD</option></select>
+      </div>
+    </div>
+    <div class="mf">
+      <label>Date Purchased</label>
+      <input type="date" id="log-date">
+    </div>
+    <div class="mf">
+      <label>Notes (optional)</label>
+      <textarea id="log-notes" placeholder="Where from, why you bought it…" style="min-height:60px"></textarea>
+    </div>
+    <div class="ma">
+      <button class="btn-p" id="log-save-btn" onclick="saveLogPurchase()" style="background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));box-shadow:0 4px 16px rgba(155,123,138,0.30)">
+        <span class="bt">Log Purchase</span><div class="li"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<header>
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true" style="background:url('icon.png') center/cover no-repeat;box-shadow:0 4px 14px rgba(201,168,154,0.35), inset 0 0 0 1px rgba(255,255,255,0.6);"></div>
+    <div class="brand-text">
+      <div class="logo">Y<span>S</span>L</div>
+      <div class="tagline">Your Style Lab</div>
+    </div>
+  </div>
+  <div class="hdr-actions">
+    <button class="hdr-icon-btn" onclick="showProfile()" title="My Profile" aria-label="Profile">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 20c1.2-3.5 4.2-5.5 7.5-5.5s6.3 2 7.5 5.5"></path></svg>
+    </button>
+  <button class="hdr-btn" onclick="showSetup()">Setup</button>
+  </div>
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <button class="tab active" onclick="sw('evaluate')">Evaluate</button>
+    <button class="tab" onclick="sw('history')">History</button>
+    <button class="tab" onclick="sw('spend')">Spend</button>
+    <button class="tab" onclick="sw('brands')">Brands</button>
+  </div>
+
+  <!-- EVALUATE (merged: quick rank + deep evaluate) -->
+  <div class="panel active" id="evaluate-panel">
+    <!-- Recent quick-strip (populated by JS) -->
+    <div class="recent-strip hidden" id="recent-strip">
+      <div class="rs-label">Recent</div>
+      <div class="rs-items" id="rs-items"></div>
+      <span class="rs-all" onclick="sw('history')">View all →</span>
+    </div>
+    <p class="slabel"><span class="num">01</span> Screenshots</p>
+    <div class="uz" id="uz">
+      <input type="file" id="fi" multiple accept="image/*" onchange="handleFiles(this.files)">
+      <div class="uz-visual">
+        <div class="uz-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        </div>
+        <div class="uz-title">Drop screenshots, or <em>tap to browse</em></div>
+        <div class="uz-sub">One item or a whole cart <span class="dot">•</span> Claude figures out the rest</div>
+      </div>
+      <div class="ut"><div class="ui">📸</div><div><div class="utx">Drop screenshots or tap to browse</div><div class="uh">One item or a whole cart · Claude figures out the rest</div></div></div>
+      <div class="cl">
+        <div class="clt">Works best with</div>
+        <div class="clg">
+          <div class="ci"><span class="cd">❖</span><span>Product page — fabric label visible</span></div>
+          <div class="ci"><span class="cd">❖</span><span>Buyer photos <span style="font-size:10px;opacity:0.7">(most important)</span></span></div>
+          <div class="ci"><span class="cd">❖</span><span>Cart screenshot — all items at once</span></div>
+          <div class="ci"><span class="cd">❖</span><span>Mix of both — Claude sorts it out</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="prevs" id="prevs"></div>
+
+    <!-- Primary CTA: Rank -->
+    <button class="btn-p" id="rank-btn" onclick="runCartRank()" style="margin-top:28px;background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));box-shadow:0 4px 16px rgba(155,123,138,0.30);">
+      <span class="bt">Rank</span>
+      <div class="li"></div>
+    </button>
+
+    <!-- Secondary: expand deep evaluate form -->
+    <div style="text-align:center;margin-top:14px">
+      <button class="btn-g" id="deep-toggle" onclick="toggleDeepEval()">+ Add details for a deeper score</button>
+    </div>
+
+    <!-- Deep evaluate form (hidden by default) -->
+    <div id="deep-form" style="display:none">
+      <p class="slabel"><span class="num">02</span> Details</p>
+      <div class="fgrid">
+        <div class="field"><label>Item Name <span class="opt">(for your record)</span></label><input type="text" id="iname" placeholder="e.g. Linen wrap dress"></div>
+        <div class="field"><label>Category</label>
+          <select id="cat">
+            <option value="">Select…</option>
+            <optgroup label="Clothing"><option>Top</option><option>Blouse / Shirt</option><option>Dress</option><option>Skirt</option><option>Trousers / Pants</option><option>Outerwear / Jacket</option><option>Blazer</option><option>Knitwear</option><option>Co-ord Set</option></optgroup>
+            <optgroup label="Shoes"><option>Heels</option><option>Flats / Loafers</option><option>Boots</option><option>Sneakers</option><option>Sandals</option></optgroup>
+            <optgroup label="Accessories"><option>Bag</option><option>Jewellery</option><option>Belt / Scarf</option><option>Sunglasses</option><option>Hat</option></optgroup>
+          </select>
+        </div>
+        <div class="field full"><label>Price <span class="opt">(choose currency on the right)</span></label>
+          <div class="price-row">
+            <input type="number" id="price" placeholder="e.g. 189" oninput="updPrice(this.value)">
+            <select class="cur-sel" id="cur" onchange="changeCur(this.value)">
+              <option value="CNY">¥ CNY</option>
+              <option value="USD">$ USD</option>
+              <option value="MYR">RM MYR</option>
+              <option value="SGD">S$ SGD</option>
+              <option value="EUR">€ EUR</option>
+              <option value="GBP">£ GBP</option>
+              <option value="HKD">HK$ HKD</option>
+              <option value="JPY">¥ JPY</option>
+            </select>
+          </div>
+          <div class="pr"><span id="pmyr" class="pm"></span><span id="pverd" class="pv"></span></div>
+        </div>
+      </div>
+      <p class="slabel"><span class="num">03</span> Occasion</p>
+      <div class="pill-group" id="occ-pills"><div class="pill" onclick="tp(this)">Work</div><div class="pill" onclick="tp(this)">Casual</div><div class="pill" onclick="tp(this)">Date</div><div class="pill" onclick="tp(this)">Weekend</div><div class="pill" onclick="tp(this)">Event / Dinner</div></div>
+      <p class="slabel"><span class="num">04</span> Extra Notes</p>
+      <textarea id="notes" placeholder="Anything to flag — e.g. ‘no buyer photos’, ‘fabric not stated’, ‘love the cut’…" oninput="chkFlags(this.value)"></textarea>
+      <div class="sw" id="sw-warn"><strong>Flags detected in notes</strong>Full evaluation still runs — flags shown in results.</div>
+      <button class="btn-p" id="ev-btn" onclick="runEval()" style="margin-top:28px;background:linear-gradient(180deg,var(--mauve),var(--mauve-deep));box-shadow:0 4px 16px rgba(155,123,138,0.30);"><span class="bt">Evaluate This Piece</span><div class="li"></div></button>
+    </div>
+
+    <!-- Rank results (shown after ranking) -->
+    <div id="cart-results" class="cart-results" style="display:none"></div>
+  </div>
+
+  <!-- HISTORY — unified evaluations + purchases -->
+  <div class="panel" id="history-panel">
+    <div class="filter-row">
+      <div>
+        <h2 style="font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:300;letter-spacing:0.01em;line-height:1">History</h2>
+        <div style="font-size:11px;color:var(--slate);margin-top:6px;letter-spacing:0.04em" id="hist-sub">—</div>
+      </div>
+      <button class="btn-g" onclick="exportData()">↓ Export</button>
+    </div>
+    <div class="filter-chips" id="hist-filters">
+      <button class="fchip active" data-f="all" onclick="setHistFilter('all')">All <span class="count" id="cnt-all">0</span></button>
+      <button class="fchip" data-f="pending" onclick="setHistFilter('pending')">Pending <span class="count" id="cnt-pending">0</span></button>
+      <button class="fchip" data-f="bought" onclick="setHistFilter('bought')">Bought <span class="count" id="cnt-bought">0</span></button>
+    </div>
+    <div id="hist-list" class="hist-list" style="margin-top:18px"><div class="le">Loading…</div></div>
+  </div>
+
+  <!-- RESULTS — lives as a slide-up sheet, opened from Evaluate or History -->
+  <div class="sheet" id="results-sheet" aria-hidden="true">
+    <div class="sheet-inner">
+      <div class="sheet-handle"></div>
+      <div class="sheet-bar">
+        <div class="sheet-title">Result</div>
+        <button class="sheet-close" onclick="hideResults()" aria-label="Close">×</button>
+      </div>
+      <div class="sheet-body">
+        <div class="rh">
+          <div class="rin" id="r-name">—</div>
+          <div class="sc" id="r-circ"><div class="sn" id="r-sc">—</div><div class="ss">/ 100</div></div>
+          <div id="r-badge" class="db">—</div>
+          <div class="rr" id="r-reason"></div>
+        </div>
+        <div id="r-flags" class="fb" style="display:none"><div class="fbt">Quality Flags</div><div id="r-flist"></div></div>
+        <div class="pcols" id="r-pillars"></div>
+        <div class="card"><div class="card-title">Outfit Suggestions</div><div id="r-outfits"></div></div>
+        <div class="card"><div class="card-title">Size &amp; Budget</div><div id="r-size" style="font-size:13px;color:var(--deep);line-height:1.8"></div></div>
+        <div class="card"><div class="card-title">Follow-up</div><div class="cm" id="chat"></div><div class="cr"><input type="text" id="ci" placeholder="Ask anything about this piece…" onkeydown="if(event.key==='Enter')sendChat()"><button class="sb" onclick="sendChat()">↑</button></div></div>
+        <div class="br">
+          <button class="btn-p" id="bought-btn" onclick="logPurchase()"><span class="bt">I Bought This</span><div class="li"></div></button>
+          <button class="btn-s" onclick="newEval()" style="flex-shrink:0;padding:14px 18px">← New</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- SPEND -->
+  <div class="panel" id="spend-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300">Spending</div>
+      <button class="btn-g" onclick="openLogModal()">+ Log Purchase</button>
+    </div>
+    <div class="ss2">
+      <div class="st"><div class="sv2" id="s-mt">RM0</div><div class="sl">This Month</div><div class="su" id="s-mb"></div></div>
+      <div class="st"><div class="sv2" id="s-mc">0</div><div class="sl">Pieces</div><div class="su" id="s-as"></div></div>
+      <div class="st"><div class="sv2" id="s-ytd">RM0</div><div class="sl">Year to Date</div><div class="su" id="s-rp"></div></div>
+    </div>
+    <div class="cw"><div class="ct">Monthly Spend — Last 12 Months</div><div class="cbars" id="cbars"></div><div class="bll" id="bll"></div></div>
+    <div class="card"><div class="card-title">This Month's Pieces</div><div id="tm-items" style="font-size:13px;color:var(--slate)">—</div></div>
+  </div>
+
+  <!-- BRANDS -->
+  <div class="panel" id="brands-panel">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:300">Brand Guide</div>
+      <button class="btn-g" onclick="document.getElementById('br-modal').classList.remove('hidden')">Add Brand</button>
+    </div>
+    <p style="font-size:11px;color:var(--slate);margin-bottom:14px;font-style:italic">Updates automatically from your purchase feedback. Buy brand × category, not brand alone.</p>
+    <div id="brands-list"><div class="le">Loading...</div></div>
+  </div>
+
+  <!-- PROFILE — opens from the header avatar button as a sheet -->
+</div>
+
+<div class="sheet" id="profile-sheet" aria-hidden="true">
+  <div class="sheet-inner">
+    <div class="sheet-handle"></div>
+    <div class="sheet-bar">
+      <div class="sheet-title">My Profile</div>
+      <button class="sheet-close" onclick="hideProfile()" aria-label="Close">×</button>
+    </div>
+    <div class="sheet-body">
+    <div class="prof-sec" id="m-sec">
+      <div class="prof-title">Body &amp; Measurements</div>
+      <button class="btn-g" id="em-btn" onclick="toggleEM()" style="position:absolute;top:15px;right:15px">✎ Edit</button>
+      <div class="pgrid" id="m-grid">
+        <div class="pi"><div class="plb">Height (cm)</div><div class="pv" id="v-h">157</div><input class="pin" id="e-h" type="number" value="157"></div>
+        <div class="pi"><div class="plb">Bust (cm)</div><div class="pv" id="v-b">88</div><input class="pin" id="e-b" type="number" value="88"></div>
+        <div class="pi"><div class="plb">Waist (cm)</div><div class="pv" id="v-w">62</div><input class="pin" id="e-w" type="number" value="62"></div>
+        <div class="pi"><div class="plb">Hips (cm)</div><div class="pv" id="v-hi">88</div><input class="pin" id="e-hi" type="number" value="88"></div>
+        <div class="pi"><div class="plb">Shoulders (cm)</div><div class="pv" id="v-sh">38</div><input class="pin" id="e-sh" type="number" value="38"></div>
+        <div class="pi"><div class="plb">Usual Size</div><div class="pv" id="v-sz">XS – S</div><input class="pin" id="e-sz" type="text" value="XS – S"></div>
+      </div>
+      <div style="font-size:12px;color:var(--slate);margin-top:12px;line-height:1.8">
+        <div style="margin-bottom:8px"><strong style="color:var(--deep)">Hourglass · Core rule:</strong> Waist visibility is the #1 signal — whenever the waist is defined you instantly look taller, more elegant, more proportional.</div>
+        <div style="margin-bottom:6px"><strong style="color:var(--deep)">Principle:</strong> Structure above, movement below. Sleek fitted torso + pleats / asymmetry / drape below = ideal.</div>
+        <div style="margin-bottom:6px"><strong style="color:var(--deep)">Best silhouettes:</strong> Fitted &amp; belted dresses · asymmetric draping · panelled dresses · A-line · wrap · sleeveless structured tailoring</div>
+        <div style="margin-bottom:6px"><strong style="color:var(--deep)">Best necklines:</strong> Square · sleeveless · racer · high-neck sleek · asymmetric</div>
+        <div style="margin-bottom:6px"><strong style="color:var(--deep)">Lengths:</strong> Mini / structured short = strong (elongates legs at 157 cm) · Midi = good · Maxi = risky unless bias-cut</div>
+        <div style="color:var(--rose)"><strong>Avoid:</strong> Babydoll cuts · oversized peplum · shapeless flowy (waist-hiding) · heavy blazers / full suits · excessive ruffles or volume at torso</div>
+      </div>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-title">Personal Colour — 浅夏 Light Summer</div>
+      <div class="pgrid" style="margin-bottom:13px">
+        <div class="pi"><div class="plb">Season</div><div class="pv">Cool Summer</div></div>
+        <div class="pi"><div class="plb">Tone</div><div class="pv">Pale + Soft-Dull</div></div>
+        <div class="pi"><div class="plb">Undertone</div><div class="pv">Cool</div></div>
+        <div class="pi"><div class="plb">Brightness</div><div class="pv">High</div></div>
+        <div class="pi"><div class="plb">Saturation</div><div class="pv">Low–Mid</div></div>
+        <div class="pi"><div class="plb">Definition</div><div class="pv">Soft</div></div>
+      </div>
+      <div class="slabel">Best Colours</div>
+      <div class="sw2"><div class="sw3" style="background:#B8CCDC"></div><div class="sw3" style="background:#C4B8CC"></div><div class="sw3" style="background:#D4C4BC"></div><div class="sw3" style="background:#A8B5A0"></div><div class="sw3" style="background:#B8B0A8"></div><div class="sw3" style="background:#E0D4CC"></div><div class="sw3" style="background:#F0ECE8"></div><div class="sw3" style="background:#C4A8B0"></div><div class="sw3" style="background:#A8B8C4"></div></div>
+      <div class="slabel" style="margin-top:11px">Avoid</div>
+      <div><span class="at">Neon / Bright</span><span class="at">Orange / Yellow</span><span class="at">Harsh Black-White</span><span class="at">High Saturation</span><span class="at">Warm Browns</span></div>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-title">Style Direction</div>
+      <p style="font-size:13px;color:var(--slate);line-height:1.8;margin-bottom:7px"><strong style="color:var(--deep)">Elegant modern feminine</strong> — Korean luxury minimalist · quiet luxury with a fashion edge · refined but youthful · sleek feminine silhouettes</p>
+      <p style="font-size:12px;color:var(--slate);line-height:1.8;margin-bottom:7px"><strong style="color:var(--deep)">Direction:</strong> Refined feminine &gt; cute feminine. Clean lines · sculpted waist · sleek fits · subtle movement or detail</p>
+      <p style="font-size:12px;color:var(--rose)">Avoid: Loud trends · heavy streetwear · overly edgy · babydoll / peplum · excessive ruffles · girlish sweetness · heavy corporate tailoring</p>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-title">Scoring Weights</div>
+      <div style="font-size:13px;color:var(--slate);line-height:2.1">
+        <div>👗 Style Match (silhouette · waist · neckline · length) <strong style="color:var(--deep)">30%</strong></div>
+        <div>🧵 Quality (fabric + stitching + buyer photos) <strong style="color:var(--deep)">25%</strong></div>
+        <div>🎨 浅夏 Colour Fit <strong style="color:var(--deep)">25%</strong></div>
+        <div>✦ Versatility / Outfit Potential <strong style="color:var(--deep)">20%</strong></div>
+      </div>
+      <div style="font-size:11px;color:var(--slate);margin-top:9px;font-style:italic">Shoes + accessories use adjusted weights. Brand is a soft signal only.</div>
+    </div>
+    <div class="prof-sec">
+      <div class="prof-title">Budget Thresholds</div>
+      <div style="font-size:13px;color:var(--slate);line-height:2.1">
+        <div>Tops / Bottoms / Shoes: <strong style="color:var(--deep)">RM150</strong> good · RM200+ justify</div>
+        <div>Dresses / Outerwear / Bags: <strong style="color:var(--deep)">RM250</strong> good · RM350+ justify</div>
+        <div>Accessories / Jewellery: <strong style="color:var(--deep)">RM80</strong> good · RM150+ justify</div>
+      </div>
+      <div style="margin-top:11px"><label style="display:block;margin-bottom:8px">Monthly Budget (RM)</label><input type="number" id="mb-input" placeholder="e.g. 500" style="max-width:180px" oninput="localStorage.setItem('ysl_mb',this.value)"></div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Currency ──
+// MYR is the home currency. Rates are approximate — tweak in localStorage if needed:
+//   localStorage.setItem('ysl_fx', JSON.stringify({USD:4.52, CNY:0.63, …}))
+const FX_DEFAULTS={CNY:0.62,USD:4.50,MYR:1.00,SGD:3.35,EUR:4.85,GBP:5.65,HKD:0.58,JPY:0.030};
+const FX_AS_OF='Jun 2026'; // bump this whenever you refresh FX_DEFAULTS or ysl_fx
+const CUR_SYM={CNY:'¥',USD:'$',MYR:'RM',SGD:'S$',EUR:'€',GBP:'£',HKD:'HK$',JPY:'¥'};
+// Escape model/user strings before innerHTML injection (XSS hardening)
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function isUuid(v){return typeof v==='string'&&/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);}
+// Tolerate preamble/markdown around model JSON — take outermost braces
+function extractJSON(raw){
+  const s=raw.indexOf('{'),e=raw.lastIndexOf('}');
+  if(s<0||e<s)throw new Error('No JSON found in model response');
+  return JSON.parse(raw.slice(s,e+1));
+}
+function getFX(){try{return{...FX_DEFAULTS,...(JSON.parse(localStorage.getItem('ysl_fx')||'{}'))};}catch(e){return FX_DEFAULTS;}}
+function toMYR(amount,cur){const r=getFX()[cur]||1;return amount*r;}
+let _cur=localStorage.getItem('ysl_cur')||'MYR';
+function changeCur(c){_cur=c;localStorage.setItem('ysl_cur',c);updPrice(document.getElementById('price').value);}
+
+let _sb=null,_local=false,_imgs=[],_lastEval=null,_chat=[],_fbStar=0,_fbThumb=null,_evalId=null,_logImgs=[];
+
+// ── CLAUDE API (dual mode) ──
+// If an Anthropic key is saved in localStorage (GitHub Pages / static hosting),
+// call api.anthropic.com directly from the browser. Otherwise route through the
+// Netlify serverless proxy. Clear the key in Settings to switch back to proxy mode.
+async function callClaude(body){
+  const ak=localStorage.getItem('ysl_ak');
+  if(ak){
+    return fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':ak,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify(body)
+    });
+  }
+  return fetch('/.netlify/functions/anthropic',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+}
+
+// ── SUPABASE ──
+function saveSupabaseConfig(){
+  const u=document.getElementById('sb-url').value.trim(),k=document.getElementById('sb-key').value.trim();
+  const ak=document.getElementById('ak-key').value.trim();
+  if(ak)localStorage.setItem('ysl_ak',ak);else localStorage.removeItem('ysl_ak'); // empty field = back to proxy mode
+  if(!u||!k){
+    if(ak){showToast('API key saved ✓ (local mode)');skipSetup();return;}
+    showToast('Enter both URL and key');return;
+  }
+  localStorage.setItem('ysl_u',u);localStorage.setItem('ysl_k',k);
+  initSB(u,k);
+}
+function initSB(u,k){
+  try{_sb=supabase.createClient(u,k);_local=false;document.getElementById('setup-overlay').classList.add('hidden');showToast('Connected ✓');syncEvals().finally(loadAll);}
+  catch(e){showToast('Connection failed');}
+}
+// Pull evaluations from Supabase, push up any local-only ones, then refresh
+// the localStorage cache. localStorage stays the synchronous read path;
+// Supabase is the durable cross-device mirror.
+async function syncEvals(){
+  if(!_sb)return;
+  try{
+    const{data,error}=await _sb.from('evaluations').select('*').order('evaluated_at',{ascending:false});
+    if(error)throw error;
+    const remote=data||[],local=getEvalsLocal();
+    const remoteIds=new Set(remote.map(r=>r.id));
+    const pushUp=local.filter(e=>!remoteIds.has(e.id))
+      .map(e=>({...e,purchase_id:isUuid(e.purchase_id)?e.purchase_id:null}));
+    if(pushUp.length){const{error:upErr}=await _sb.from('evaluations').upsert(pushUp);if(upErr)console.warn('eval push-up failed',upErr);}
+    const merged=[...remote,...local.filter(e=>!remoteIds.has(e.id))]
+      .sort((a,b)=>new Date(b.evaluated_at)-new Date(a.evaluated_at)).slice(0,30);
+    try{localStorage.setItem('ysl_evals',JSON.stringify(merged));}
+    catch(_e){
+      const slim=merged.map((r,i)=>i<5?r:({...r,thumbs:[]}));
+      try{localStorage.setItem('ysl_evals',JSON.stringify(slim));}catch(__e){console.warn('eval cache failed',__e);}
+    }
+  }catch(e){console.warn('eval sync failed',e);}
+}
+function skipSetup(){_local=true;_sb=null;document.getElementById('setup-overlay').classList.add('hidden');loadAll();}
+function showSetup(){
+  document.getElementById('setup-overlay').classList.remove('hidden');
+  const u=localStorage.getItem('ysl_u')||'',k=localStorage.getItem('ysl_k')||'';
+  document.getElementById('sb-url').value=u;document.getElementById('sb-key').value=k;
+  document.getElementById('ak-key').value=localStorage.getItem('ysl_ak')||'';
+}
+window.addEventListener('load',()=>{
+  const u=localStorage.getItem('ysl_u'),k=localStorage.getItem('ysl_k');
+  if(u&&k){document.getElementById('sb-url').value=u;document.getElementById('sb-key').value=k;initSB(u,k);}
+  else{skipSetup();}
+  const mb=localStorage.getItem('ysl_mb');
+  if(mb)document.getElementById('mb-input').value=mb;
+});
+function loadAll(){loadHistory();loadBrands();loadSpend();renderRecentStrip();const cs=document.getElementById('cur');if(cs)cs.value=_cur;}
+
+// ── DATA ──
+async function getPurchases(){
+  if(_sb){const{data}=await _sb.from('purchases').select('*').order('purchased_at',{ascending:false});return data||[];}
+  return JSON.parse(localStorage.getItem('ysl_p')||'[]');
+}
+async function savePurchase(p){
+  if(_sb){const{data,error}=await _sb.from('purchases').insert([p]).select();if(error)throw error;return data[0];}
+  const l=JSON.parse(localStorage.getItem('ysl_p')||'[]');p.id=Date.now().toString();l.unshift(p);localStorage.setItem('ysl_p',JSON.stringify(l));return p;
+}
+async function updatePurchase(id,u){
+  if(_sb){await _sb.from('purchases').update(u).eq('id',id);}
+  else{const l=JSON.parse(localStorage.getItem('ysl_p')||'[]'),i=l.findIndex(p=>p.id==id);if(i>-1){l[i]={...l[i],...u};localStorage.setItem('ysl_p',JSON.stringify(l));}}
+}
+async function getBrands(){
+  if(_sb){const{data}=await _sb.from('brands').select('*').order('name');return data||[];}
+  return JSON.parse(localStorage.getItem('ysl_br')||JSON.stringify(defBrands()));
+}
+async function saveBrand(b){
+  if(_sb){const{data}=await _sb.from('brands').insert([b]).select();return data[0];}
+  const l=JSON.parse(localStorage.getItem('ysl_br')||JSON.stringify(defBrands()));b.id=Date.now().toString();l.push(b);localStorage.setItem('ysl_br',JSON.stringify(l));return b;
+}
+async function updateBrand(id,u){
+  if(_sb){await _sb.from('brands').update(u).eq('id',id);}
+  else{const l=JSON.parse(localStorage.getItem('ysl_br')||JSON.stringify(defBrands())),i=l.findIndex(b=>b.id==id);if(i>-1){l[i]={...l[i],...u};localStorage.setItem('ysl_br',JSON.stringify(l));}}
+}
+function defBrands(){return[
+  {id:'b1',name:'IEF',tier:'staple',best_for:'Knit tops, easy outfits',notes:'Check lighter colours carefully',thumb:null,feedback_count:0},
+  {id:'b2',name:'KANO',tier:'staple',best_for:'Basics, casual wear',notes:'Not for statement pieces',thumb:null,feedback_count:0},
+  {id:'b3',name:'Neva Hu',tier:'upgrade',best_for:'Trousers, structured tops',notes:'Avoid very thin knits',thumb:null,feedback_count:0},
+  {id:'b4',name:'Mangoway',tier:'upgrade',best_for:'Dresses, everyday sets',notes:'Safe general pick',thumb:null,feedback_count:0},
+  {id:'b5',name:'EGGKA',tier:'statement',best_for:'Blazers, trousers',notes:'Avoid random trendy tops',thumb:null,feedback_count:0},
+  {id:'b6',name:'CHUU',tier:'statement',best_for:'Only if you love the design',notes:'Not for investment pieces',thumb:null,feedback_count:0},
+  {id:'b7',name:'Sleep at 11',tier:'statement',best_for:'Only if you love the design',notes:'Not for investment pieces',thumb:null,feedback_count:0},
+  {id:'b8',name:'Blackstrawberry',tier:'avoid',best_for:'—',notes:'Consistently poor quality',thumb:'down',feedback_count:0},
+];}
+
+// ── TABS ──
+function sw(tab){
+  const n=['evaluate','history','spend','brands'];
+  document.querySelectorAll('.tab').forEach((t,i)=>{t.classList.toggle('active',n[i]===tab);});
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById(tab+'-panel').classList.add('active');
+  if(tab==='history')loadHistory();
+  if(tab==='spend')loadSpend();
+  if(tab==='brands')loadBrands();
+}
+
+// ── SHEETS ──
+function showSheet(id){const s=document.getElementById(id);s.classList.add('open');s.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
+function hideSheet(id){const s=document.getElementById(id);s.classList.remove('open');s.setAttribute('aria-hidden','true');document.body.style.overflow='';}
+function showResults(){showSheet('results-sheet');}
+function hideResults(){hideSheet('results-sheet');}
+function showProfile(){showSheet('profile-sheet');}
+function hideProfile(){hideSheet('profile-sheet');}
+// Tap-outside to dismiss
+document.addEventListener('click',(e)=>{
+  if(e.target.classList&&e.target.classList.contains('sheet')&&e.target.classList.contains('open')){hideSheet(e.target.id);}
+});
+// Esc to dismiss top sheet
+document.addEventListener('keydown',(e)=>{
+  if(e.key==='Escape'){['results-sheet','profile-sheet'].forEach(id=>{const s=document.getElementById(id);if(s&&s.classList.contains('open'))hideSheet(id);});}
+});
+
+// Start a fresh evaluation (from inside the results sheet)
+function newEval(){hideResults();resetEval();}
+
+// ── UPLOAD ──
+function handleFiles(f){Array.from(f).forEach(file=>{const r=new FileReader();r.onload=e=>{_imgs.push({dataUrl:e.target.result,base64:e.target.result.split(',')[1],type:file.type||'image/jpeg'});renderPrevs();};r.readAsDataURL(file);});}
+function renderPrevs(){const c=document.getElementById('prevs');c.innerHTML='';_imgs.forEach((img,i)=>{const d=document.createElement('div');d.className='pt';d.innerHTML=`<img src="${img.dataUrl}"><button class="rm" onclick="rmImg(${i})">×</button>`;c.appendChild(d);});}
+function rmImg(i){_imgs.splice(i,1);renderPrevs();}
+const uz=document.getElementById('uz');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('dv');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('dv'));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('dv');handleFiles(e.dataTransfer.files);});
+
+// ── PRICE ──
+const BT={'Dress':{g:250,w:350},'Outerwear / Jacket':{g:250,w:350},'Blazer':{g:250,w:350},'Co-ord Set':{g:200,w:300},'Bag':{g:250,w:350},'Jewellery':{g:80,w:150},'Belt / Scarf':{g:80,w:150},'Sunglasses':{g:80,w:150},'Hat':{g:80,w:150},'default':{g:150,w:200}};
+function updPrice(v){
+  const m=parseFloat(v);const d=document.getElementById('pmyr'),vd=document.getElementById('pverd');
+  if(!v||isNaN(m)){d.textContent='';vd.textContent='';return;}
+  const myr=toMYR(m,_cur);
+  d.textContent=(_cur==='MYR')?'':`≈ RM${myr.toFixed(2)} · rate as of ${FX_AS_OF}`;
+  const cat=document.getElementById('cat').value,t=BT[cat]||BT['default'];
+  if(myr<=t.g){vd.textContent='✓ Good value';vd.style.color='#4a7a4a';}
+  else if(myr<=t.w){vd.textContent='— Needs justification';vd.style.color='#8B6914';}
+  else{vd.textContent='⚠ Above threshold';vd.style.color='#8B3030';}
+}
+document.getElementById('cat').addEventListener('change',()=>updPrice(document.getElementById('price').value));
+function chkFlags(v){const f=['no buyer photo','fabric not stated','no 买家秀','too cheap'];document.getElementById('sw-warn').classList.toggle('show',f.some(x=>v.toLowerCase().includes(x.toLowerCase())));}
+
+// ── PILLS ──
+function tp(el){el.classList.toggle('selected');}
+function tpS(el){document.querySelectorAll('#sz-pills .pill').forEach(p=>p.classList.remove('selected'));el.classList.add('selected');}
+function gPills(id){return Array.from(document.querySelectorAll(`#${id} .pill.selected`)).map(p=>p.textContent);}
+
+// ── MEASUREMENTS ──
+function getM(){return{h:document.getElementById('v-h').textContent,b:document.getElementById('v-b').textContent,w:document.getElementById('v-w').textContent,hi:document.getElementById('v-hi').textContent,sh:document.getElementById('v-sh').textContent,sz:document.getElementById('v-sz').textContent};}
+
+// ── SYSTEM PROMPT ──
+async function buildSys(){
+  const m=getM(),brands=await getBrands();
+  const bc=brands.map(b=>{let l=`${b.name}(${b.tier})`;if(b.best_for)l+=` best_for:${b.best_for}`;if(b.notes)l+=` notes:${b.notes}`;if(b.thumb==='up')l+=' user_recommends:YES';if(b.thumb==='down')l+=' user_recommends:NO';return l;}).join('\n');
+  // Live spend context so budgetVerdict reflects the month, not just the item
+  let spendCtx='';
+  try{
+    const mb=parseFloat(localStorage.getItem('ysl_mb'))||null;
+    const ps=await getPurchases(),tm=new Date().toISOString().slice(0,7);
+    const tmt=ps.filter(p=>p.purchased_at&&p.purchased_at.startsWith(tm)).reduce((s,p)=>s+(p.price_myr||0),0);
+    spendCtx=mb
+      ?`\nSPEND THIS MONTH: RM${tmt.toFixed(0)} of RM${mb} monthly budget used (${Math.round(tmt/mb*100)}%), RM${Math.max(0,mb-tmt).toFixed(0)} remaining. If this item's price exceeds the remaining budget or pushes the month materially over, state it explicitly in budgetVerdict and let it weigh on the decision.\n`
+      :`\nSPEND THIS MONTH: RM${tmt.toFixed(0)} (no monthly budget set).\n`;
+  }catch(e){}
+  return `You are YSL — Your Style Lab — personal fashion evaluator for Yi Wen.
+
+MEASUREMENTS: Height:${m.h}cm Bust:${m.b}cm Waist:${m.w}cm Hips:${m.hi}cm Shoulders:${m.sh}cm Size:${m.sz}
+
+COLOUR 浅夏 Light Summer: Cool undertone, Summer Pale+Soft-Dull. Best: dusty blue, soft lavender, muted pink, sage, soft grey, cool beige, soft white, muted rose, powder blue. Avoid: neon, orange, yellow, warm browns, harsh black-white, high saturation.
+
+BODY Hourglass 88-62-88 @ 157cm:
+CORE RULE: Waist visibility = #1 signal. Silhouette defines/cinches/drapes at waist → boost Style score. Waist hidden or obscured → penalise Style score.
+PRINCIPLE: Structure above, movement below. Sleek/fitted torso + pleats/asymmetry/drape below waist = ideal combination.
+BEST silhouettes: fitted & belted dresses, asymmetric draping, panelled dresses, A-line, wrap, fitted bodices, sleeveless structured tailoring.
+BEST necklines: square, sleeveless, racer, high-neck sleek, asymmetric. Avoid excessive ruffles/volume at collar or shoulder.
+LENGTHS: Mini/structured short = strong (elongates legs at 157cm). Midi = good. Maxi = risky unless bias-cut.
+FABRIC: medium-thick, smooth, drape preferred. Avoid stiff fabrics that don't follow the body.
+AVOID: babydoll cuts, oversized peplum, shapeless flowy (waist-hiding), heavy blazers/full suits with big lapels, excessive ruffles or volume at torso/waist.
+
+STYLE: Elegant modern feminine. Korean luxury minimalist, quiet luxury with fashion edge, refined but youthful. Refined feminine > cute feminine. Best: clean lines, sculpted waist, sleek fits, subtle movement/details. Avoid: loud trends, streetwear, edgy, babydoll/peplum, excessive ruffles, girlish sweetness, heavy corporate tailoring.
+
+BRAND INTELLIGENCE (user's accumulated experience — primary signal):
+${bc}
+Brand is soft signal only. Cross-reference brand×category. Prioritise visual assessment.
+
+QUALITY FILTERS (read from screenshots):
+1. FABRIC: 棉cotton/天丝Tencel/粘纤viscose/莫代尔modal/混纺blends=good. 100%涤纶polyester=caution unless structured.
+2. DETAILS: Straight stitching=pass. Wavy seams/sheer/no lining on structured=fail.
+3. BUYER PHOTOS (most important): Good drape, consistent colour=pass. Shiny/cheap/wrinkles badly/different from model=fail.
+4. STORE: Rating≥4.7 good. Low sales=caution.
+
+SKIP FLAGS (flag but always run full evaluation): No buyer photos | Fabric unstated | Over-edited model photos | Suspiciously cheap | 100% polyester non-structured top
+
+SCORING:
+Clothing: StyleMatch30% Quality25% Colour25% Versatility20%
+Shoes: MaterialQuality35% Colour25% StyleMatch25% Versatility15%
+Accessories: Quality30% Colour30% StyleMatch25% Versatility15%
+Decision: 85-100=Strong Buy | 70-84=Buy | 50-69=Risk | <50=Skip
+
+BUDGET MYR: Tops/Bottoms/Shoes RM150 good RM200+ justify | Dresses/Outerwear/Bags RM250 good RM350+ justify | Accessories RM80 good RM150+ justify
+${spendCtx}
+OUTPUT only valid JSON no markdown:
+{"itemSummary":"","skipFlags":[],"qualityScore":0,"qualityNote":"","colourScore":0,"colourNote":"","styleScore":0,"styleNote":"","versatilityScore":0,"versatilityNote":"","finalScore":0,"decision":"","decisionReason":"","outfits":[{"occasion":"","pairing":""}],"sizeRecommendation":"","budgetVerdict":""}`;
+}
+
+// ── EVALUATE ──
+async function runEval(){
+  if(!_imgs.length){showToast('Upload at least one screenshot');return;}
+  const btn=document.getElementById('ev-btn');btn.classList.add('loading');btn.disabled=true;
+  const iname=document.getElementById('iname').value.trim(),cat=document.getElementById('cat').value,price=document.getElementById('price').value,notes=document.getElementById('notes').value.trim(),occ=gPills('occ-pills');
+  const priceNum=price?parseFloat(price):null;
+  const priceMYR=priceNum?toMYR(priceNum,_cur):null;
+  const content=_imgs.map(img=>({type:'image',source:{type:'base64',media_type:img.type,data:img.base64}}));
+  let prompt='Evaluate this item.\n';
+  if(iname)prompt+=`Label: ${iname}\n`;if(cat)prompt+=`Category: ${cat}\n`;
+  if(price)prompt+=`Price: ${CUR_SYM[_cur]||''}${price} ${_cur} (≈RM${priceMYR.toFixed(2)})\n`;
+  if(occ.length)prompt+=`Occasions: ${occ.join(', ')}\n`;if(notes)prompt+=`Notes: ${notes}\n`;
+  prompt+=`\n${_imgs.length} screenshot(s). Read fabric, stitching, buyer photos, store metrics from images directly.`;
+  content.push({type:'text',text:prompt});
+  try{
+    const sys=await buildSys();
+    const res=await callClaude({model:'claude-sonnet-4-6',max_tokens:4000,system:sys,messages:[{role:'user',content}]});
+    const d=await res.json();
+    if(d.error){showToast('API error: '+(d.error.message||d.error.type||'unknown'));return;}
+    const result=extractJSON(d.content.map(c=>c.text||'').join(''));
+    const finalName=iname||result.itemSummary;
+    // Build thumbnails for the recent strip (≤ 200px wide JPEGs)
+    const thumbs=await Promise.all(_imgs.map(i=>makeThumb(i.dataUrl)));
+    const evalRec={
+      id:'e'+Date.now().toString(36),
+      evaluated_at:new Date().toISOString(),
+      item_name:finalName,
+      category:cat||null,
+      price:priceNum,
+      currency:_cur,
+      price_myr:priceMYR,
+      occ:occ||[],
+      notes:notes||null,
+      result,
+      thumbs,
+      chat:[],
+      bought:false,
+      purchase_id:null,
+    };
+    saveEvalLocal(evalRec);
+    _evalId=evalRec.id;
+    _lastEval={result,iname:finalName,cat,price:priceNum,currency:_cur,priceMYR,occ,thumbs,evalId:evalRec.id,imgs:_imgs.map(i=>({base64:i.base64,type:i.type}))};
+    _chat=[];
+    renderResults(result,finalName);
+    refreshBoughtBtn(false);
+    renderRecentStrip();
+    showResults();
+  }catch(e){console.error(e);showToast('Something went wrong');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+
+// ── RENDER ──
+function renderResults(r,name){
+  document.getElementById('r-name').textContent=name;
+  const sc=Math.round(r.finalScore);document.getElementById('r-sc').textContent=sc;
+  const col=sc>=85?'#3B6A3F':sc>=70?'#6E5418':sc>=50?'#7C4624':'#7A2730';
+  const circ=document.getElementById('r-circ');circ.style.color=col;circ.style.setProperty('--p',sc);
+  const badge=document.getElementById('r-badge');
+  badge.textContent=r.decision;
+  badge.className='db '+(sc>=85?'ds':sc>=70?'db2':sc>=50?'dr':'dsk');
+  document.getElementById('r-reason').textContent=r.decisionReason||'';
+  const rf=document.getElementById('r-flags');
+  if(r.skipFlags&&r.skipFlags.length){document.getElementById('r-flist').innerHTML=r.skipFlags.map(f=>`<div class="fi"><span>⚠</span><span>${esc(f)}</span></div>`).join('');rf.style.display='block';}else{rf.style.display='none';}
+  const pillars=[{name:'Quality',w:'30%',s:r.qualityScore,n:r.qualityNote},{name:'浅夏 Colour',w:'25%',s:r.colourScore,n:r.colourNote},{name:'Style Match',w:'20%',s:r.styleScore,n:r.styleNote},{name:'Versatility',w:'25%',s:r.versatilityScore,n:r.versatilityNote}];
+  document.getElementById('r-pillars').innerHTML=pillars.map(p=>`<div class="pc"><div class="ph"><div><div class="pn">${p.name}</div><div class="pw">${p.w}</div></div><div class="ps">${Math.round(p.s)}</div></div><div class="pb"><div class="pf" style="width:${p.s}%"></div></div><div class="pnt">${esc(p.n)}</div></div>`).join('');
+  document.getElementById('r-outfits').innerHTML=(r.outfits||[]).map(o=>`<div style="margin-bottom:10px"><span class="oo">${esc(o.occasion)}</span><div style="font-size:12px;color:var(--slate);margin-top:5px;padding-left:2px;line-height:1.65">${esc(o.pairing)}</div></div>`).join('');
+  document.getElementById('r-size').innerHTML=`<div>${esc(r.sizeRecommendation)}</div>${r.budgetVerdict?`<div style="margin-top:6px;font-size:12px;color:var(--mauve);font-style:italic">${esc(r.budgetVerdict)}</div>`:''}`;
+  document.getElementById('chat').innerHTML='';document.getElementById('ci').value='';
+}
+
+// ── CHAT ──
+// Re-attach the item's images so follow-ups can re-inspect fabric/stitching/
+// buyer photos instead of answering blind from a one-line score summary.
+// Fresh evals carry full-res images; re-opened ones fall back to stored thumbs.
+function chatImageBlocks(){
+  if(_lastEval?.imgs?.length)return _lastEval.imgs.map(i=>({type:'image',source:{type:'base64',media_type:i.type,data:i.base64}}));
+  return(_lastEval?.thumbs||[]).filter(t=>typeof t==='string'&&t.startsWith('data:image')).map(t=>({type:'image',source:{type:'base64',media_type:'image/jpeg',data:t.split(',')[1]}}));
+}
+async function sendChat(){
+  const inp=document.getElementById('ci'),msg=inp.value.trim();if(!msg||!_lastEval)return;
+  inp.value='';appendMsg(msg,'user');_chat.push({role:'user',content:msg});
+  const ld=appendMsg('','ai',true);
+  const r=_lastEval.result;
+  const ctx=`[Item:"${_lastEval.iname}" Score:${Math.round(r.finalScore)} ${r.decision} Q:${r.qualityScore} C:${r.colourScore} S:${r.styleScore} V:${r.versatilityScore}]`;
+  const first={role:'user',content:[...chatImageBlocks(),{type:'text',text:ctx+'\nFollow-up: '+_chat[0].content}]};
+  const msgs=[first,..._chat.slice(1)];
+  try{
+    const sys=await buildSys();
+    const res=await callClaude({model:'claude-sonnet-4-6',max_tokens:1000,system:sys+'\n\nFollow-up mode: plain conversational text, no JSON, max 3-4 sentences. You can see the item screenshots — re-examine them when asked about fabric, stitching, colour, or buyer photos.',messages:msgs});
+    const d=await res.json();const reply=d.content.map(c=>c.text||'').join('').trim();
+    ld.remove();appendMsg(reply,'ai');_chat.push({role:'assistant',content:reply});
+  }catch(e){ld.remove();appendMsg('Something went wrong.','ai');}
+  // Persist chat even when the item is never bought
+  if(_evalId)updateEvalLocal(_evalId,{chat:_chat});
+}
+function appendMsg(text,role,loading=false){
+  const c=document.getElementById('chat'),d=document.createElement('div');
+  d.className=`msg ${role}${loading?' loading':''}`;
+  if(loading)d.innerHTML=`<div class="dp"><span></span><span></span><span></span></div>`;
+  else d.textContent=text; // model/user text is never injected as HTML
+  c.appendChild(d);c.scrollTop=c.scrollHeight;return d;
+}
+
+// ── LOG PURCHASE ──
+async function logPurchase(){
+  if(!_lastEval)return;
+  const btn=document.getElementById('bought-btn');btn.classList.add('loading');btn.disabled=true;
+  try{
+    const{result,iname,cat,priceMYR,occ,evalId}=_lastEval;
+    const p={item_name:iname,category:cat||null,brand:null,price_myr:priceMYR||null,score:Math.round(result.finalScore),decision:result.decision,occasions:occ||[],purchased_at:new Date().toISOString()};
+    const saved=await savePurchase(p);
+    _lastEval.pid=saved.id;
+    if(evalId){updateEvalLocal(evalId,{bought:true,purchase_id:saved.id,chat:_chat});}
+    btn.classList.remove('loading');btn.innerHTML='<span class="bt">Logged · Saved</span><div class="li"></div>';
+    showToast('Logged');
+    renderRecentStrip();
+    loadHistory();
+  }catch(e){console.error(e);showToast('Failed to save');btn.classList.remove('loading');btn.disabled=false;}
+}
+function refreshBoughtBtn(bought){
+  const bb=document.getElementById('bought-btn');
+  if(bought){bb.disabled=true;bb.innerHTML='<span class="bt">Already bought</span><div class="li"></div>';}
+  else{bb.disabled=false;bb.classList.remove('loading');bb.innerHTML='<span class="bt">I Bought This</span><div class="li"></div>';}
+}
+
+// ── QUICK LOG MODAL ──
+function openLogModal(){
+  _logImgs=[];renderLogPrevs();
+  ['log-name','log-price','log-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('log-cat').value='';
+  document.getElementById('log-cur').value=_cur||'MYR';
+  document.getElementById('log-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('log-fi').value='';
+  const btn=document.getElementById('log-save-btn');btn.disabled=false;btn.classList.remove('loading');btn.innerHTML='<span class="bt">Log Purchase</span><div class="li"></div>';
+  document.getElementById('log-modal').classList.remove('hidden');
+}
+function closeLogModal(){document.getElementById('log-modal').classList.add('hidden');}
+function handleLogFiles(f){
+  Array.from(f).forEach(file=>{
+    const r=new FileReader();
+    r.onload=e=>{_logImgs.push({dataUrl:e.target.result,type:file.type||'image/jpeg'});renderLogPrevs();};
+    r.readAsDataURL(file);
+  });
+}
+function renderLogPrevs(){
+  const c=document.getElementById('log-prevs');c.innerHTML='';
+  _logImgs.forEach((img,i)=>{
+    const d=document.createElement('div');d.className='pt';
+    d.innerHTML=`<img src="${img.dataUrl}"><button class="rm" onclick="rmLogImg(${i})">×</button>`;
+    c.appendChild(d);
+  });
+}
+function rmLogImg(i){_logImgs.splice(i,1);renderLogPrevs();}
+async function saveLogPurchase(){
+  const name=document.getElementById('log-name').value.trim();
+  if(!name){showToast('Item name required');return;}
+  const btn=document.getElementById('log-save-btn');btn.classList.add('loading');btn.disabled=true;
+  try{
+    const price=parseFloat(document.getElementById('log-price').value)||null;
+    const cur=document.getElementById('log-cur').value||'MYR';
+    const fx=getFX();
+    const priceMYR=price?(cur==='MYR'?price:price*(fx[cur]||1)):null;
+    const cat=document.getElementById('log-cat').value||null;
+    const dateVal=document.getElementById('log-date').value;
+    const notes=document.getElementById('log-notes').value.trim()||null;
+    // Compress first image to a small thumbnail for display
+    let thumbnail=null;
+    if(_logImgs.length)thumbnail=await makeThumb(_logImgs[0].dataUrl,300);
+    const p={
+      item_name:name,category:cat,brand:null,
+      price_myr:priceMYR,score:null,decision:'Logged',
+      occasions:[],purchased_at:dateVal?new Date(dateVal+'T12:00:00').toISOString():new Date().toISOString(),
+      notes,thumbnail,logged:true
+    };
+    await savePurchase(p);
+    closeLogModal();
+    showToast('Purchase logged ✓');
+    if(document.getElementById('spend-panel').classList.contains('active'))loadSpend();
+  }catch(e){console.error(e);showToast('Failed to save');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+
+// ── EVALUATIONS HISTORY (localStorage) ──
+// Stored as ysl_evals = [{id, evaluated_at, item_name, category, price, currency, price_myr, occ, notes, result, thumbs[], chat[], bought, purchase_id}]
+function getEvalsLocal(){try{return JSON.parse(localStorage.getItem('ysl_evals')||'[]');}catch(e){return[];}}
+// Fire-and-forget mirror of one eval row to Supabase
+function pushEvalSB(rec){
+  if(!_sb||!rec)return;
+  _sb.from('evaluations').upsert([{...rec,purchase_id:isUuid(rec.purchase_id)?rec.purchase_id:null}])
+    .then(({error})=>{if(error)console.warn('eval mirror failed',error);});
+}
+function saveEvalLocal(rec){
+  let list=getEvalsLocal();list.unshift(rec);
+  // Keep last 30 evals to bound localStorage size
+  if(list.length>30)list=list.slice(0,30);
+  try{localStorage.setItem('ysl_evals',JSON.stringify(list));}
+  catch(e){
+    // Quota exceeded — drop thumbs from oldest and retry
+    list=list.map((r,i)=>i<5?r:({...r,thumbs:[]}));
+    try{localStorage.setItem('ysl_evals',JSON.stringify(list));}catch(_e){console.warn('eval persist failed',_e);}
+  }
+  pushEvalSB(rec);
+}
+function updateEvalLocal(id,patch){
+  const list=getEvalsLocal(),i=list.findIndex(e=>e.id===id);
+  if(i>-1){list[i]={...list[i],...patch};localStorage.setItem('ysl_evals',JSON.stringify(list));pushEvalSB(list[i]);}
+}
+function deleteEvalLocal(id){
+  const list=getEvalsLocal().filter(e=>e.id!==id);
+  localStorage.setItem('ysl_evals',JSON.stringify(list));
+  if(_sb)_sb.from('evaluations').delete().eq('id',id).then(({error})=>{if(error)console.warn('eval delete failed',error);});
+}
+
+// Generate a small JPEG thumbnail from a data URL
+function makeThumb(dataUrl,maxW=180){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const r=Math.min(1,maxW/img.width),w=Math.round(img.width*r),h=Math.round(img.height*r);
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      resolve(c.toDataURL('image/jpeg',0.65));
+    };
+    img.onerror=()=>resolve(dataUrl);
+    img.src=dataUrl;
+  });
+}
+
+// Recent quick-strip is the convenience shortcut on Evaluate. The History tab
+// is the canonical home; the strip lets you re-enter a pending eval in one tap.
+function renderRecentStrip(){
+  const strip=document.getElementById('recent-strip'),items=document.getElementById('rs-items');
+  if(!strip||!items)return;
+  const evals=getEvalsLocal().filter(e=>!e.bought).slice(0,5);
+  if(!evals.length){strip.classList.add('hidden');return;}
+  strip.classList.remove('hidden');
+  items.innerHTML=evals.map(e=>{
+    const sc=Math.round(e.result?.finalScore||0);
+    const col=sc>=85?'#2D6A3F':sc>=70?'#856404':sc>=50?'#8B4513':'#721C24';
+    const name=esc(e.item_name||'Unnamed');
+    return`<div class="rs-item" onclick="loadEval('${e.id}')"><div class="rs-sc" style="background:${col}">${sc}</div><div class="rs-nm">${name}</div></div>`;
+  }).join('');
+}
+
+// ── HISTORY (unified evaluations + purchases) ──
+// 'all' — every record, newest first
+// 'pending' — evaluations not yet bought
+// 'bought' — purchases (with their original eval data when still available)
+let _histFilter='all';
+function setHistFilter(f){
+  _histFilter=f;
+  document.querySelectorAll('#hist-filters .fchip').forEach(c=>c.classList.toggle('active',c.dataset.f===f));
+  loadHistory();
+}
+async function loadHistory(){
+  const evals=getEvalsLocal();
+  const purchases=await getPurchases();
+  // Build a unified list. Each entry has a `kind` and a `when` for sorting.
+  // Match purchases to evals via purchase_id; standalone purchases (no eval) still show.
+  const matchedEvalIds=new Set();
+  const items=[];
+  evals.forEach(e=>{
+    let purch=null;
+    if(e.bought&&e.purchase_id){purch=purchases.find(p=>p.id==e.purchase_id);if(purch)matchedEvalIds.add(e.id);}
+    items.push({
+      kind:e.bought?'bought':'pending',
+      when:purch?.purchased_at||e.evaluated_at,
+      eval:e, purchase:purch
+    });
+  });
+  // Orphan purchases — no surviving eval data
+  purchases.forEach(p=>{
+    if(!evals.some(e=>e.purchase_id==p.id)){
+      items.push({kind:'bought',when:p.purchased_at,eval:null,purchase:p});
+    }
+  });
+  items.sort((a,b)=>new Date(b.when)-new Date(a.when));
+
+  // Counts
+  const pendCount=items.filter(i=>i.kind==='pending').length;
+  const boughtCount=items.filter(i=>i.kind==='bought').length;
+  document.getElementById('cnt-all').textContent=items.length;
+  document.getElementById('cnt-pending').textContent=pendCount;
+  document.getElementById('cnt-bought').textContent=boughtCount;
+  document.getElementById('hist-sub').textContent=items.length
+    ?`${items.length} · ${pendCount} pending decision · ${boughtCount} bought`
+    :'Nothing here yet.';
+
+  // Filter
+  const filtered=items.filter(i=>{
+    if(_histFilter==='all')return true;
+    return i.kind===_histFilter;
+  });
+
+  const box=document.getElementById('hist-list');
+  if(!filtered.length){
+    const empty=_histFilter==='pending'
+      ?'No pieces awaiting a decision. Evaluate something on the Evaluate tab.'
+      :_histFilter==='bought'
+        ?'No purchases yet. Tap <em>I Bought This</em> on any evaluation.'
+        :'Once you evaluate a piece, it lives here — come back any time to decide.';
+    box.innerHTML=`<div class="rec-empty"><div class="em-mark">YSL</div><p>${empty}</p></div>`;
+    return;
+  }
+  box.innerHTML=filtered.map((it,i)=>renderHistCard(it,i)).join('');
+  // wire whole-card click for items that have an eval to re-open
+  box.querySelectorAll('.eval-card').forEach((card,i)=>{
+    const it=filtered[i];
+    if(it.eval){
+      card.style.cursor='pointer';
+      card.addEventListener('click',()=>loadEval(it.eval.id));
+    }
+  });
+}
+function renderHistCard(it,idx){
+  const e=it.eval, p=it.purchase, bought=it.kind==='bought';
+  const sc=Math.round((e?.result?.finalScore)??p?.score??0);
+  const col=sc>=85?'#2D6A3F':sc>=70?'#856404':sc>=50?'#8B4513':'#721C24';
+  const name=esc(e?.item_name||p?.item_name||'Unnamed');
+  const cat=esc(e?.category||p?.category||'');
+  const decision=esc(e?.result?.decision||p?.decision||'');
+  const dt=relTime(it.when);
+  const sym=e?CUR_SYM[e.currency]||'':'';
+  const priceTxt=e&&e.price!=null
+    ?`${sym}${e.price} ${e.currency}${e.price_myr&&e.currency!=='MYR'?` <span style="opacity:0.6">≈ RM${e.price_myr.toFixed(0)}</span>`:''}`
+    :p&&p.price_myr?`RM${p.price_myr.toFixed(0)}`:'';
+  const thumbs=(e?.thumbs||[]).slice(0,3).map(t=>`<img class="ev-thumb" src="${t}">`).join('');
+  const more=(e?.thumbs||[]).length>3?`<div class="ev-thumb-more">+${e.thumbs.length-3}</div>`:'';
+  // Actions per state
+  let actions='';
+  if(bought){
+    const hasFB=p&&(p.feedback_quality||p.feedback_notes||p.feedback_thumb);
+    actions=`<span class="ev-bought-badge">Bought</span>`;
+    if(p)actions+=`<button class="btn-g" onclick="event.stopPropagation();openFB('${p.id}','${(p.brand||'').replace(/'/g,"\\'")}')">${hasFB?'Edit feedback':'+ Feedback'}</button>`;
+  }else if(e){
+    actions=`<button class="btn-g" onclick="event.stopPropagation();loadEval('${e.id}')">Open →</button>
+             <button class="btn-g" onclick="event.stopPropagation();quickBuy('${e.id}')" style="color:var(--deep);border-color:var(--mauve)">Bought</button>`;
+  }
+  // Tiny inline feedback summary on bought cards
+  let fbMini='';
+  if(bought&&p&&(p.feedback_quality||p.feedback_notes||p.feedback_thumb)){
+    const stars=p.feedback_quality?`<span class="stars">${'★'.repeat(p.feedback_quality)}${'☆'.repeat(5-p.feedback_quality)}</span>`:'';
+    const thumb=p.feedback_thumb==='up'?' · recommended':p.feedback_thumb==='down'?' · not recommended':'';
+    const note=p.feedback_notes?` — ${esc(p.feedback_notes)}`:'';
+    fbMini=`<div class="ev-fb-mini ev-feedback-row">${stars}${thumb}${note}</div>`;
+  }
+  return`
+  <div class="eval-card${bought?' bought':''}">
+    <div class="ev-score" style="color:${col};--p:${sc}"><div class="ev-sn">${sc||'—'}</div><div class="ev-ss">/ 100</div></div>
+    <div class="ev-body">
+      <div class="ev-name">${name}</div>
+      <div class="ev-meta">
+        ${cat?`<span>${cat}</span><span class="dot">•</span>`:''}
+        <span>${dt}</span>
+        ${priceTxt?`<span class="dot">•</span><span class="price">${priceTxt}</span>`:''}
+      </div>
+      ${thumbs?`<div class="ev-thumbs">${thumbs}${more}</div>`:''}
+      ${fbMini}
+    </div>
+    <div class="ev-actions">${actions}<div class="ev-decision">${decision}</div></div>
+  </div>`;
+}
+
+// Bring a stored evaluation back into the Results sheet
+function loadEval(id){
+  const e=getEvalsLocal().find(x=>x.id===id);if(!e)return;
+  _evalId=e.id;
+  _lastEval={result:e.result,iname:e.item_name,cat:e.category,price:e.price,currency:e.currency,priceMYR:e.price_myr,occ:e.occ,thumbs:e.thumbs,evalId:e.id};
+  _chat=e.chat||[];
+  renderResults(e.result,e.item_name);
+  const cm=document.getElementById('chat');cm.innerHTML='';
+  (_chat||[]).forEach(m=>appendMsg(m.content,m.role==='user'?'user':'ai'));
+  refreshBoughtBtn(!!e.bought);
+  showResults();
+}
+
+// One-tap “I bought this” from a history card
+async function quickBuy(id){
+  const e=getEvalsLocal().find(x=>x.id===id);if(!e||e.bought)return;
+  try{
+    const p={item_name:e.item_name,category:e.category||null,brand:null,price_myr:e.price_myr||null,score:Math.round(e.result?.finalScore||0),decision:e.result?.decision||'',occasions:e.occ||[],purchased_at:new Date().toISOString()};
+    const saved=await savePurchase(p);
+    updateEvalLocal(id,{bought:true,purchase_id:saved.id});
+    showToast('Logged as bought ✓');
+    loadHistory();renderRecentStrip();
+  }catch(err){console.error(err);showToast('Failed to save');}
+}
+
+function clearOldEvals(){
+  if(!confirm('Remove all evaluations you’ve already marked as bought?'))return;
+  const list=getEvalsLocal().filter(e=>!e.bought);
+  localStorage.setItem('ysl_evals',JSON.stringify(list));
+  if(_sb)_sb.from('evaluations').delete().eq('bought',true).then(({error})=>{if(error)console.warn('eval clear failed',error);});
+  loadHistory();renderRecentStrip();
+}
+
+function relTime(iso){
+  const d=new Date(iso),now=Date.now(),s=Math.floor((now-d.getTime())/1000);
+  if(s<60)return'just now';
+  if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';
+  if(s<2592000)return Math.floor(s/86400)+'d ago';
+  return d.toLocaleDateString('en-MY',{day:'numeric',month:'short'});
+}
+
+// ── FEEDBACK ──
+function openFB(pid,brand){
+  _fbStar=0;_fbThumb=null;
+  document.getElementById('fb-pid').value=pid;document.getElementById('fb-notes').value='';
+  setStar(0);setThumb(null);
+  document.querySelectorAll('#sz-pills .pill').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('fb-modal').classList.remove('hidden');
+}
+function closeFB(){document.getElementById('fb-modal').classList.add('hidden');}
+function setStar(v){_fbStar=v;document.querySelectorAll('.star').forEach(s=>s.classList.toggle('active',parseInt(s.dataset.v)<=v));}
+function setThumb(v){_fbThumb=_fbThumb===v?null:v;document.getElementById('tb-up').classList.toggle('sup',_fbThumb==='up');document.getElementById('tb-dn').classList.toggle('sdn',_fbThumb==='down');}
+async function saveFB(){
+  const btn=document.querySelector('#fb-modal .btn-p');btn.classList.add('loading');btn.disabled=true;
+  const pid=document.getElementById('fb-pid').value,sizing=gPills('sz-pills')[0]||null,notes=document.getElementById('fb-notes').value.trim();
+  const updates={feedback_quality:_fbStar||null,feedback_sizing:sizing,feedback_notes:notes||null,feedback_thumb:_fbThumb,feedback_at:new Date().toISOString()};
+  try{
+    await updatePurchase(pid,updates);
+    const ps=await getPurchases(),p=ps.find(x=>x.id==pid);
+    if(p&&p.brand&&_fbThumb){
+      const bs=await getBrands(),br=bs.find(b=>b.name.toLowerCase()===(p.brand||'').toLowerCase());
+      if(br)await updateBrand(br.id,{thumb:_fbThumb,feedback_count:(br.feedback_count||0)+1,notes:notes||br.notes});
+    }
+    closeFB();showToast('Feedback saved ✓');loadHistory();loadBrands();
+  }catch(e){showToast('Failed');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+
+// ── SPEND ──
+async function loadSpend(){
+  const ps=await getPurchases(),now=new Date(),tm=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`,mb=parseFloat(localStorage.getItem('ysl_mb'))||null;
+  const tmi=ps.filter(p=>p.purchased_at&&p.purchased_at.startsWith(tm));
+  const tmt=tmi.reduce((s,p)=>s+(p.price_myr||0),0);
+  const scored=tmi.filter(p=>p.score!=null&&p.score>0);
+  const tmas=scored.length?Math.round(scored.reduce((s,p)=>s+p.score,0)/scored.length):0;
+  const rc=tmi.filter(p=>p.decision==='Risk'||p.decision==='Skip').length;
+  document.getElementById('s-mt').textContent=`RM${tmt.toFixed(0)}`;document.getElementById('s-mc').textContent=tmi.length;
+  document.getElementById('s-as').textContent=scored.length?`avg score ${tmas}`:'';
+  if(mb)document.getElementById('s-mb').textContent=`${Math.round((tmt/mb)*100)}% of RM${mb} budget`;
+  document.getElementById('s-rp').textContent=rc>0?`${rc} risk buy${rc>1?'s':''}`:tmi.length?'all good buys':'';
+  const ytdi=ps.filter(p=>p.purchased_at&&p.purchased_at.startsWith(now.getFullYear().toString())),ytdt=ytdi.reduce((s,p)=>s+(p.price_myr||0),0);
+  document.getElementById('s-ytd').textContent=`RM${ytdt.toFixed(0)}`;
+  const months=[];for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1),key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`,label=d.toLocaleDateString('en-MY',{month:'short'}),total=ps.filter(p=>p.purchased_at&&p.purchased_at.startsWith(key)).reduce((s,p)=>s+(p.price_myr||0),0);months.push({key,label,total,cur:key===tm});}
+  const mx=Math.max(...months.map(m=>m.total),mb||0,1);
+  document.getElementById('cbars').innerHTML=months.map(m=>`<div class="cc"><div class="cbw"><div class="cb${m.cur?' cm2':''}" style="height:${Math.round((m.total/mx)*100)}%" data-tip="RM${m.total.toFixed(0)}"></div></div><div class="cbl">${m.label}</div></div>`).join('');
+  if(mb)document.getElementById('bll').textContent=`— RM${mb} monthly budget`;
+  document.getElementById('tm-items').innerHTML=tmi.length?tmi.map(p=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);gap:10px">
+      ${p.thumbnail?`<img src="${p.thumbnail}" style="width:38px;height:38px;object-fit:cover;border-radius:9px;flex-shrink:0">`:
+        `<div style="width:38px;height:38px;border-radius:9px;background:var(--pearl);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px">${{dress:'👗',top:'👚',bottom:'👖',shoes:'👠',bag:'👜',accessories:'💍',outerwear:'🧥'}[p.category]||'🛍️'}</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(p.item_name||'Unnamed')}</div>
+        <div style="font-size:10px;letter-spacing:0.08em;margin-top:2px;${p.logged?'color:var(--slate)':'color:var(--mauve)'}">${p.logged?'NOT EVALUATED':p.score?`Score ${p.score} · ${p.decision}`:p.decision||''}</div>
+      </div>
+      <span style="color:var(--mauve);font-size:13px;flex-shrink:0">RM${(p.price_myr||0).toFixed(0)}</span>
+    </div>`).join(''):'<div style="color:var(--slate);font-style:italic;font-size:13px">No purchases this month.</div>';
+}
+
+// ── BRANDS ──
+async function loadBrands(){
+  const brands=await getBrands();
+  const tiers=['staple','upgrade','statement','untested','avoid'],tl={staple:'Staple — reliable basics',upgrade:'Upgrade — elevated pieces',statement:'Statement — selective buys',untested:'Untested — trying out',avoid:'Avoid'};
+  let html='';
+  tiers.forEach(tier=>{const g=brands.filter(b=>b.tier===tier);if(!g.length)return;html+=`<div class="bsec"><div class="btl">${tl[tier]}</div>`;g.forEach(b=>{html+=`<div class="bc"><div class="bch"><div class="bnr"><div class="bnm">${esc(b.name)}</div><span class="btb tb${tier.slice(0,2)}">${tier}</span>${b.thumb?`<span class="bth">${b.thumb==='up'?'👍':'👎'}</span>`:''}</div></div>${b.best_for?`<div class="bbfor">Best for: ${esc(b.best_for)}</div>`:''} ${b.notes?`<div class="bnt">${esc(b.notes)}</div>`:''} ${b.feedback_count?`<div class="bbf">${b.feedback_count} feedback entr${b.feedback_count>1?'ies':'y'}</div>`:''}</div>`;});html+='</div>';});
+  document.getElementById('brands-list').innerHTML=html||'<div class="le">No brands yet.</div>';
+}
+async function saveNB(){
+  const btn=document.querySelector('#br-modal .btn-p');btn.classList.add('loading');btn.disabled=true;
+  const name=document.getElementById('nb-name').value.trim();if(!name){showToast('Name required');btn.classList.remove('loading');btn.disabled=false;return;}
+  try{await saveBrand({name,tier:document.getElementById('nb-tier').value,best_for:document.getElementById('nb-bf').value.trim()||null,notes:document.getElementById('nb-notes').value.trim()||null,thumb:null,feedback_count:0});document.getElementById('br-modal').classList.add('hidden');['nb-name','nb-bf','nb-notes'].forEach(id=>document.getElementById(id).value='');showToast('Brand added ✓');loadBrands();}
+  catch(e){showToast('Failed');}
+  btn.classList.remove('loading');btn.disabled=false;
+}
+
+// ── MEASUREMENTS ──
+let _em=false;
+function toggleEM(){
+  const g=document.getElementById('m-grid'),btn=document.getElementById('em-btn');_em=!_em;
+  if(_em){g.classList.add('em');btn.textContent='✓ Save';btn.classList.add('sv');['h','b','w','hi','sh','sz'].forEach(f=>{document.getElementById('e-'+f).value=document.getElementById('v-'+f).textContent;});}
+  else{['h','b','w','hi','sh','sz'].forEach(f=>{const v=document.getElementById('e-'+f).value.trim();if(v)document.getElementById('v-'+f).textContent=v;});g.classList.remove('em');btn.textContent='✎ Edit';btn.classList.remove('sv');showToast('Measurements saved ✓');}
+}
+
+// ── EXPORT ──
+async function exportData(){
+  const ps=await getPurchases(),bs=await getBrands();
+  const blob=new Blob([JSON.stringify({purchases:ps,brands:bs,exported:new Date().toISOString()},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`ysl-${new Date().toISOString().split('T')[0]}.json`;a.click();showToast('Exported ✓');
+}
+
+// ── RESET ──
+function resetEval(){
+  _imgs=[];renderPrevs();
+  ['iname','price','notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cat').value='';
+  document.getElementById('pmyr').textContent='';document.getElementById('pverd').textContent='';
+  document.getElementById('fi').value='';
+  document.querySelectorAll('#occ-pills .pill.selected').forEach(p=>p.classList.remove('selected'));
+  document.getElementById('sw-warn').classList.remove('show');
+  document.getElementById('cart-results').style.display='none';
+  document.getElementById('deep-form').style.display='none';
+  document.getElementById('deep-toggle').textContent='+ Add details for a deeper score';
+  document.getElementById('rank-btn').disabled=false;
+  document.getElementById('rank-btn').classList.remove('loading');
+  _lastEval=null;_chat=[];_evalId=null;_cartResults=null;
+  renderRecentStrip();
+}
+
+// ── RANK / EVALUATE (merged) ──
+let _cartResults=null;
+
+function toggleDeepEval(){
+  const form=document.getElementById('deep-form'),btn=document.getElementById('deep-toggle');
+  const shown=form.style.display!=='none';
+  form.style.display=shown?'none':'block';
+  btn.textContent=shown?'+ Add details for a deeper score':'− Hide details';
+}
+
+async function buildCartSys(){
+  const m=getM(),brands=await getBrands();
+  const bc=brands.map(b=>{let l=`${b.name}(${b.tier})`;if(b.best_for)l+=` best_for:${b.best_for}`;if(b.notes)l+=` notes:${b.notes}`;if(b.thumb==='up')l+=' user_recommends:YES';if(b.thumb==='down')l+=' user_recommends:NO';return l;}).join('\n');
+  return `You are YSL — Your Style Lab — personal fashion evaluator for Yi Wen.
+
+MEASUREMENTS: Height:${m.h}cm Bust:${m.b}cm Waist:${m.w}cm Hips:${m.hi}cm Shoulders:${m.sh}cm Size:${m.sz}
+
+COLOUR 浅夏 Light Summer: Cool undertone, Summer Pale+Soft-Dull. Best: dusty blue, soft lavender, muted pink, sage, soft grey, cool beige, soft white, muted rose, powder blue. Avoid: neon, orange, yellow, warm browns, harsh black-white, high saturation.
+
+BODY Hourglass 88-62-88 @ 157cm:
+CORE RULE: Waist visibility = #1 signal. Silhouette defines/cinches/drapes at waist → boost Style score. Waist hidden → penalise.
+PRINCIPLE: Structure above, movement below. Sleek/fitted torso + pleats/asymmetry/drape below waist = ideal.
+BEST silhouettes: fitted & belted dresses, asymmetric draping, panelled dresses, A-line, wrap, fitted bodices, sleeveless structured tailoring.
+BEST necklines: square, sleeveless, racer, high-neck sleek, asymmetric.
+LENGTHS: Mini/structured short = strong (elongates legs at 157cm). Midi = good. Maxi = risky unless bias-cut.
+AVOID: babydoll cuts, oversized peplum, shapeless flowy, heavy blazers/full suits with big lapels, excessive ruffles or volume at torso/waist.
+
+STYLE: Elegant modern feminine. Korean luxury minimalist, quiet luxury, refined but youthful. Refined feminine > cute feminine. Avoid: loud trends, streetwear, edgy, babydoll/peplum, excessive ruffles, girlish sweetness, heavy corporate tailoring.
+
+BRAND INTELLIGENCE:
+${bc}
+Brand is soft signal only. Prioritise visual assessment.
+
+QUALITY FILTERS:
+1. FABRIC: 棉/天丝/粘纤/莫代尔/混纺=good. 100%涤纶polyester=caution unless structured.
+2. DETAILS: Straight stitching=pass. Wavy seams/sheer=fail.
+3. BUYER PHOTOS: Good drape=pass. Shiny/cheap/wrinkles badly=fail.
+Note: cart thumbnails are small — assess quality conservatively; flag if uncertain.
+
+SCORING per item: StyleMatch30% Quality25% Colour25% Versatility20%
+finalScore=(styleScore*0.30)+(qualityScore*0.25)+(colourScore*0.25)+(versatilityScore*0.20)
+Decision: 85-100=Strong Buy | 70-84=Buy | 50-69=Risk | <50=Skip
+
+TASK: Cart Ranking Mode.
+Identify every distinct fashion item visible across all screenshots. Score each on all four pillars. Rank from best to worst for Yi Wen (rank 1 = best fit for her profile).
+rankReason: 1-2 sentences explaining exactly why this item ranks here — be specific about silhouette, colour, or quality signals you can see.
+concern: flag any issue (missing fabric info, likely polyester, no buyer photos, waist-hiding cut, wrong colour). Empty string if none.
+
+OUTPUT only valid JSON, no markdown:
+{"cartSummary":"","items":[{"rank":1,"name":"","styleScore":0,"styleNote":"","qualityScore":0,"qualityNote":"","colourScore":0,"colourNote":"","versatilityScore":0,"versatilityNote":"","finalScore":0,"decision":"","rankReason":"","concern":""}]}`;
+}
+
+async function runCartRank(){
+  if(!_imgs.length){showToast('Upload at least one screenshot');return;}
+  const btn=document.getElementById('rank-btn');btn.classList.add('loading');btn.disabled=true;
+  document.getElementById('cart-results').style.display='none';
+  const content=_imgs.map(img=>({type:'image',source:{type:'base64',media_type:img.type,data:img.base64}}));
+  content.push({type:'text',text:'These are screenshots of items I am considering buying. Identify every distinct fashion item visible. Score each using my profile. Rank from best to worst for me.'});
+  try{
+    const sys=await buildCartSys();
+    const res=await callClaude({model:'claude-sonnet-4-6',max_tokens:4000,system:sys,messages:[{role:'user',content}]});
+    const d=await res.json();
+    if(d.error){showToast('API error: '+(d.error.message||d.error.type||'unknown'));return;}
+    const result=extractJSON(d.content.map(c=>c.text||'').join(''));
+    _cartResults=result;
+    renderCartResults(result);
+  }catch(e){console.error(e);showToast('Something went wrong');}
+  document.getElementById('rank-btn').classList.remove('loading');
+  document.getElementById('rank-btn').disabled=false;
+}
+
+function renderCartResults(data){
+  const box=document.getElementById('cart-results');
+  box.style.display='block';
+  const items=data.items||[];
+  if(!items.length){box.innerHTML='<div class="le">No items identified — try a clearer screenshot.</div>';return;}
+  const col=sc=>sc>=85?'#3B6A3F':sc>=70?'#6E5418':sc>=50?'#7C4624':'#7A2730';
+  const rnk=r=>r===1?'Best':r===2?'2nd':r===3?'3rd':`#${r}`;
+  box.innerHTML=`
+    <div class="cart-results-hd">Ranked for you <span>${esc(data.cartSummary||items.length+' items identified')}</span></div>
+    ${items.map(item=>{
+      const c=col(item.finalScore);
+      const bars=[{l:'Style',v:item.styleScore},{l:'Quality',v:item.qualityScore},{l:'Colour',v:item.colourScore},{l:'Versatility',v:item.versatilityScore}];
+      return`<div class="cr-card${item.rank===1?' rank-1':''}">
+        <div class="cr-rank"><div class="cr-rank-num">${item.rank}</div><div class="cr-rank-label">${rnk(item.rank)}</div></div>
+        <div class="cr-body">
+          <div class="cr-name">${esc(item.name)}</div>
+          <div class="cr-reason">${esc(item.rankReason)}</div>
+          ${item.concern?`<div class="cr-concern">⚠ ${esc(item.concern)}</div>`:''}
+          <div class="cr-bars">${bars.map(b=>`<div class="cr-bar-row"><div class="cr-bar-lbl">${b.l}</div><div class="cr-bar-track"><div class="cr-bar-fill" style="width:${b.v}%"></div></div><div class="cr-bar-val">${Math.round(b.v)}</div></div>`).join('')}</div>
+        </div>
+        <div class="cr-score-col">
+          <div class="cr-score-num" style="color:${c}">${Math.round(item.finalScore)}</div>
+          <div class="cr-decision">${esc(item.decision)}</div>
+          <button class="btn-g" onclick="saveCartItem(${item.rank})" style="margin-top:6px;white-space:nowrap">Save →</button>
+        </div>
+      </div>`;
+    }).join('')}
+    <button class="btn-s" onclick="resetCart()" style="margin-top:8px;width:100%">← New Cart</button>`;
+}
+
+function saveCartItem(rank){
+  if(!_cartResults)return;
+  const item=_cartResults.items.find(i=>i.rank===rank);
+  if(!item)return;
+  document.getElementById('iname').value=item.name;
+  const form=document.getElementById('deep-form');
+  form.style.display='block';
+  document.getElementById('deep-toggle').textContent='− Hide details';
+  form.scrollIntoView({behavior:'smooth',block:'start'});
+  showToast('Name filled in — add product screenshots then evaluate');
+}
+
+// ── TOAST ──
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+</script>
+
+
+</body></html>
